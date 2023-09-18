@@ -45,22 +45,27 @@ public class Node
     }
 
     //99% confidence this is correct
-    public void writeHashbit(ulong[] hashBits)
+    public void writeHashbit(Dictionary<uint, ulong> hashbits)
     {
         var base_ = hash / 64;
         var offset = hash % 64;
         var x = 1ul << (int)offset;
-        //TODO: is this cast correct?
-        hashBits[base_] |= x;
+        if (!hashbits.TryGetValue(base_, out var val))
+            hashbits.Add(base_, 0);
+
+        hashbits[base_] = val | x;
     }
 
     //99% confidence this is correct
-    public bool isHashedQ(ulong[] hashbits)
+    public bool isHashedQ(Dictionary<uint, ulong> hashbits)
     {
-        var base_ = hash / 64;
+        var b = hash / 64;
         var offset = hash % 64;
         var x = 1ul << (int)offset;
-        return (hashbits[base_] & x) != 0;
+        if (!hashbits.TryGetValue(b, out var y))
+            hashbits.Add(b, 0);
+        
+        return (y & x) != 0;
     }
     
     public int nodeBlocks()

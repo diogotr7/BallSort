@@ -10,7 +10,7 @@ public class Global
     public readonly int NVOLUME;
     public readonly int NVIALS;
 
-    public readonly ulong[] hashbits;
+    public readonly Dictionary<uint, ulong> hashbits;
     public readonly State state;
     public readonly Hash hash;
 
@@ -36,7 +36,7 @@ public class Global
             }
         }
 
-        hashbits = new ulong[67108864];
+        hashbits = new Dictionary<uint, ulong>();
     }
 
     public int Compare(Vial v1, Vial v2)
