@@ -2,42 +2,42 @@
 
 public class Node
 {
-    public Vial[] vial;
+    public readonly Vial[] Vials;
     public uint hash;
     public MoveInfo mvInfo;
     
-    public Node(VialsDef t)
+    public Node(VialsDef t, Hash h)
     {
-        vial = new Vial[t.Length];
+        Vials = new Vial[t.Length];
         for (var i = 0; i < t.Length; i++)
         {
-            vial[i] = new Vial(t[i], (byte)i);
+            Vials[i] = new Vial(t[i], (byte)i);
         }
 
-        hash = getHash();
+        hash = getHash(h);
         mvInfo = new MoveInfo();
     }
     
     public Node(Node node)
     {
-        vial = new Vial[node.vial.Length];
-        for (var i = 0; i < vial.Length; i++)
+        Vials = new Vial[node.Vials.Length];
+        for (var i = 0; i < Vials.Length; i++)
         {
-            vial[i] = new Vial(node.vial[i].Balls, node.vial[i].Position);
+            Vials[i] = new Vial(node.Vials[i].Balls, node.Vials[i].Position);
         }
 
         hash = node.hash;
         mvInfo = node.mvInfo;
     }
     
-    public uint getHash()
+    public uint getHash(Hash h)
     {
         var Result = 0u;
-        for (var v = 0; v <= Global.NVIALS-1; v++)
+        for (var v = 0; v < Vials.Length; v++)
         {
-            for (var p = 0; p <= Global.NVOLUME-1; p++)
+            for (var p = 0; p < Vials[0].Balls.Length; p++)
             {
-                Result ^= Global.hash[(int)vial[v].Balls[p], p, v];
+                Result ^= h[(int)Vials[v].Balls[p], p, v];
             }
         }
 
@@ -45,30 +45,30 @@ public class Node
     }
 
     //99% confidence this is correct
-    public void writeHashbit()
+    public void writeHashbit(ulong[] hashBits)
     {
         var base_ = hash / 64;
         var offset = hash % 64;
         var x = 1ul << (int)offset;
         //TODO: is this cast correct?
-        Global.hashbits[base_] |= x;
+        hashBits[base_] |= x;
     }
 
     //99% confidence this is correct
-    public bool isHashedQ()
+    public bool isHashedQ(ulong[] hashbits)
     {
         var base_ = hash / 64;
         var offset = hash % 64;
         var x = 1ul << (int)offset;
-        return (Global.hashbits[base_] & x) != 0;
+        return (hashbits[base_] & x) != 0;
     }
     
     public int nodeBlocks()
     {
         var Result = 0;
-        for (var i = 0; i <= Global.NVIALS - 1; i++)
+        for (var i = 0; i < Vials.Length; i++)
         {
-            Result += vial[i].VialBlocks();
+            Result += Vials[i].VialBlocks();
         }
 
         return Result;
@@ -76,11 +76,11 @@ public class Node
     
     public bool equalQ(Node node)
     {
-        for (var i = 0; i <= Global.NVIALS - 1; i++)
+        for (var i = 0; i < Vials.Length; i++)
         {
-            for (var j = 0; j <= Global.NVOLUME - 1; j++)
+            for (var j = 0; j < Vials[i].Balls.Length; j++)
             {
-                if (vial[i].Balls[j] != node.vial[i].Balls[j])
+                if (Vials[i].Balls[j] != node.Vials[i].Balls[j])
                 {
                     return false;
                 }
@@ -90,30 +90,30 @@ public class Node
         return true;
     }
 
-    public string lastmoves()
+    public string lastmoves(int ncolors)
     {
         var Result = "";
         var j = 0;
-        for (var i = 1; i <= Global.NCOLORS; i++)
+        for (var i = 1; i <= ncolors; i++)
         {
-            j = Global.NVIALS - 1;
-            while ((int)vial[j].GetTopInfo().TopCol != i)
+            j = Vials.Length - 1;
+            while ((int)Vials[j].GetTopInfo().TopCol != i)
             {
                 j--;
             }
 
-            if (vial[j].GetTopInfo().Empty == 0)
+            if (Vials[j].GetTopInfo().Empty == 0)
             {
                 continue; //vial with this color is full
             }
 
             for (var k = 0; k <= j - 1; k++)
             {
-                if ((int)vial[k].GetTopInfo().TopCol == i)
+                if ((int)Vials[k].GetTopInfo().TopCol == i)
                 {
-                    for (var n = 0; n <= vial[k].GetTopInfo().TopVol - 1; n++)
+                    for (var n = 0; n <= Vials[k].GetTopInfo().TopVol - 1; n++)
                     {
-                        Result += $"{vial[k].Position + 1}->{vial[j].Position + 1}  ";
+                        Result += $"{Vials[k].Position + 1}->{Vials[j].Position + 1}  ";
                     }
                 }
             }
@@ -127,13 +127,13 @@ public class Node
         return Result;
     }
 
-    public int Nlastmoves()
+    public int Nlastmoves(int nemptyvials)
     {
         var Result = 0;
 
-        for (var i = 0; i <= Global.NEMPTYVIALS - 1; i++)
+        for (var i = 0; i < nemptyvials; i++)
         {
-            Result += vial[i].GetTopInfo().TopVol;
+            Result += Vials[i].GetTopInfo().TopVol;
         }
 
         return Result;
@@ -142,9 +142,9 @@ public class Node
     public int emptyVials()
     {
         var Result = 0;
-        for (var i = 0; i <= Global.NVIALS - 1; i++)
+        for (var i = 0; i < Vials.Length; i++)
         {
-            if (vial[i].Balls[Global.NVOLUME - 1] == Ball.Empty)
+            if (Vials[i].Balls[^1] == Ball.Empty)
             {
                 Result++;
             }

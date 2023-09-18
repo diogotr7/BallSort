@@ -35,7 +35,7 @@ public class Vial
         }
 
         res.TopVol = 1;
-        for (var i = res.Empty + 1; i <= Global.NVOLUME - 1; i++)
+        for (var i = res.Empty + 1; i < Balls.Length; i++)
         {
             if (cl == Balls[i])
             {

@@ -1,21 +1,26 @@
 ﻿// ReSharper disable InconsistentNaming
+
 namespace PascalPort;
 
-public static class Global
+public class Global
 {
-    private static readonly Random random = new();
-    public const int NCOLORS = 2;
-    public const int NEMPTYVIALS = 1;
-    public const int NVOLUME = 4;
-    public const int NVIALS = NCOLORS + NEMPTYVIALS;
-    
-    public static readonly ulong[] hashbits;
-    public static readonly State state;
-    public static readonly Hash hash;
-    public static VialsDef vialDefinition;
+    private readonly Random random = new(0);
+    public readonly int NCOLORS;
+    public readonly int NEMPTYVIALS;
+    public readonly int NVOLUME;
+    public readonly int NVIALS;
 
-    static Global()
+    public readonly ulong[] hashbits;
+    public readonly State state;
+    public readonly Hash hash;
+
+    public Global(GameSettings settings)
     {
+        NCOLORS = settings.FilledVialCount;
+        NEMPTYVIALS = settings.EmptyVialCount;
+        NVOLUME = settings.VialDepth;
+        NVIALS = NCOLORS + NEMPTYVIALS;
+
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
         const int N_NOTDECREASE = 1000;
         state = new State(NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1);
@@ -31,30 +36,10 @@ public static class Global
             }
         }
 
-        //idfk why this is this big
         hashbits = new ulong[67108864];
-
-        vialDefinition = new VialsDef(NVIALS, NVOLUME);
-        //full vials
-        for (var i = 0; i <= NCOLORS - 1; i++)
-        {
-            for (var j = 0; j <= NVOLUME - 1; j++)
-            {
-                vialDefinition[i, j] = (Ball)(i + 1);
-            }
-        }
-
-        //empty vials
-        for (var i = NCOLORS; i <= NVIALS - 1; i++)
-        {
-            for (var j = 0; j <= NVOLUME - 1; j++)
-            {
-                vialDefinition[i, j] = Ball.Empty;
-            }
-        }
     }
 
-    public static int Compare(Vial v1, Vial v2)
+    public int Compare(Vial v1, Vial v2)
     {
         for (var i = 0; i <= NVOLUME - 1; i++)
         {
@@ -67,20 +52,20 @@ public static class Global
         return 0;
     }
 
-    public static void SortNode(Node node, int iLo, int iHi)
+    public void SortNode(Node node, int iLo, int iHi)
     {
         var Lo = iLo;
         var Hi = iHi;
-        var Pivot = node.vial[(Lo + Hi) / 2];
+        var Pivot = node.Vials[(Lo + Hi) / 2];
         do
         {
-            while (Compare(node.vial[Lo], Pivot) == 1)
+            while (Compare(node.Vials[Lo], Pivot) == 1)
                 Lo++;
-            while (Compare(node.vial[Hi], Pivot) == -1)
+            while (Compare(node.Vials[Hi], Pivot) == -1)
                 Hi--;
             if (Lo <= Hi)
             {
-                (node.vial[Lo], node.vial[Hi]) = (node.vial[Hi], node.vial[Lo]);
+                (node.Vials[Lo], node.Vials[Hi]) = (node.Vials[Hi], node.Vials[Lo]);
                 Lo++;
                 Hi--;
             }
@@ -92,17 +77,7 @@ public static class Global
             SortNode(node, Lo, iHi);
     }
 
-    public static void Shuffle()
-    {
-        for (var i = NVOLUME * NCOLORS - 1; i > 1; i--)
-        {
-            var j = random.Next(i + 1);
-            (vialDefinition[j / NVOLUME, j % NVOLUME], vialDefinition[i / NVOLUME, i % NVOLUME]) =
-                (vialDefinition[i / NVOLUME, i % NVOLUME], vialDefinition[j / NVOLUME, j % NVOLUME]);
-        }
-    }
-
-    public static string nearoptimalSolution_single(int nblock, int y0)
+    public string nearoptimalSolution_single(int nblock, int y0)
     {
         var i = 0;
         var x = 0;
@@ -125,17 +100,17 @@ public static class Global
         if (state[nblock - NCOLORS, y0].Count == 0)
             return "No solution. Undo moves or create new puzzle.";
 
-        if (nblock == NCOLORS)//puzzle is almost solved
-            return new Node(state[0, 0][0]).lastmoves();
+        if (nblock == NCOLORS) //puzzle is almost solved
+            return new Node(state[0, 0][0]).lastmoves(NCOLORS);
 
         var Result = "";
 
         x = nblock - NCOLORS;
         y = y0;
         nd = new Node(state[x, y][0]);
-        addmove = nd.Nlastmoves(); //add last moves seperate
-        mv2 = nd.lastmoves();
-        
+        addmove = nd.Nlastmoves(NEMPTYVIALS); //add last moves seperate
+        mv2 = nd.lastmoves(NCOLORS);
+
         src = nd.mvInfo.Source;
         dst = nd.mvInfo.Destination;
         Result += $"{src + 1}->{dst + 1},";
@@ -148,29 +123,24 @@ public static class Global
         while (x != 0 || y != 0)
         {
             ndlist = state[x, y];
-            if (ndlist.Count == 0)
-            {
-                break;
-            }
-            Console.WriteLine($"x={x}, y={y}, ndlist.Count={ndlist.Count}");
             for (i = 0; i <= ndlist.Count - 1; i++)
             {
                 ndcand = new Node(ndlist[i]);
-                
+
                 ks = 0;
-                while (ndcand.vial[ks].Position != src)
+                while (ndcand.Vials[ks].Position != src)
                 {
                     ks++;
                 }
 
                 kd = 0;
-                while (ndcand.vial[kd].Position != dst)
+                while (ndcand.Vials[kd].Position != dst)
                 {
                     kd++;
                 }
 
-                viS = ndcand.vial[ks].GetTopInfo();
-                viD = ndcand.vial[kd].GetTopInfo();
+                viS = ndcand.Vials[ks].GetTopInfo();
+                viD = ndcand.Vials[kd].GetTopInfo();
                 if (viS.Empty == NVOLUME)
                 {
                     continue; //source is empty vial
@@ -183,8 +153,8 @@ public static class Global
                     continue;
                 }
 
-                ndcand.vial[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
-                ndcand.vial[ks].Balls[viS.Empty] = Ball.Empty;
+                ndcand.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
+                ndcand.Vials[ks].Balls[viS.Empty] = Ball.Empty;
 
                 SortNode(ndcand, 0, NVIALS - 1);
                 if (nd.equalQ(ndcand))
@@ -207,14 +177,14 @@ public static class Global
                 }
             }
         }
-        
+
         Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
         var reversed = string.Join(" | ", Result.Split(',').Reverse());
         reversed += $" | {mv2}";
         return reversed;
     }
-    
-    public static void solve_single(VialsDef def)
+
+    public void solve_single(VialsDef vialDefinition)
     {
         Node nd;
         Node ndnew;
@@ -235,44 +205,44 @@ public static class Global
         VialTopInfo viD;
         bool blockdecreaseQ;
         bool solutionFound;
-        
-        //InitFalse
-        
-        nd = new Node(def);
+
+        //TODO: throw if vialDefinition has wrong size
+
+        nd = new Node(vialDefinition, hash);
         SortNode(nd, 0, NVIALS - 1);
-        
+
         y = 0;
         nblockV = nd.nodeBlocks() + nd.emptyVials() - NEMPTYVIALS;
         for (i = 0; i <= nblockV - NCOLORS; i++)
             state[i, y] = new List<Node>();
-        
+
         state[0, 0].Add(nd);
-        nd.writeHashbit();
+        nd.writeHashbit(hashbits);
         total = 1;
-        
+
         solutionFound = false;
         do
         {
             newnodes = 0;
             for (i = 0; i <= nblockV - NCOLORS; i++)
-                state[i, y + 1] = new List<Node>();//prepare next column
-            
+                state[i, y + 1] = new List<Node>(); //prepare next column
+
             for (x = 0; x <= nblockV - NCOLORS - 1; x++)
             {
                 //if stop
                 //application.processmessages
-                
+
                 ndlist = state[x, y];
                 for (i = 0; i <= ndlist.Count - 1; i++)
                 {
                     nd = new Node(ndlist[i]);
                     for (ks = 0; ks <= NVIALS - 1; ks++)
                     {
-                        viS = nd.vial[ks].GetTopInfo();
+                        viS = nd.Vials[ks].GetTopInfo();
                         if (viS.Empty == NVOLUME)
                         {
                             //Console.WriteLine("empty vial");
-                            continue;//source is empty vial
+                            continue; //source is empty vial
                         }
 
                         for (kd = 0; kd <= NVIALS - 1; kd++)
@@ -283,7 +253,7 @@ public static class Global
                                 continue;
                             }
 
-                            viD = nd.vial[kd].GetTopInfo();
+                            viD = nd.Vials[kd].GetTopInfo();
                             if (viD.Empty == 0 || //dest vial full
                                 (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) || //dest vial not empty and colors not equal 
                                 (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1)) //dest vial empty and source vial has only one block
@@ -297,17 +267,17 @@ public static class Global
                             else
                                 blockdecreaseQ = false;
                             ndnew = new Node(nd);
-                            ndnew.vial[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
-                            ndnew.vial[ks].Balls[viS.Empty] = Ball.Empty;
+                            ndnew.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
+                            ndnew.Vials[ks].Balls[viS.Empty] = Ball.Empty;
                             SortNode(ndnew, 0, NVIALS - 1);
-                            ndnew.hash = ndnew.getHash();
-                            if (ndnew.isHashedQ())
+                            ndnew.hash = ndnew.getHash(hash);
+                            if (ndnew.isHashedQ(hashbits))
                             {
-                                ndnew = null;
                                 //Console.WriteLine("hash collision");
                                 continue;
                             }
-                            ndnew.writeHashbit();
+
+                            ndnew.writeHashbit(hashbits);
                             total++;
                             const int N_MAXNODES = 100000000;
                             if (total > N_MAXNODES)
@@ -316,8 +286,9 @@ public static class Global
                                 //Form1.Memo1.Lines.Add(Format('Node limit %d exceeded!', [N_MAXNODES]));
                                 return;
                             }
-                            ndnew.mvInfo.Source = nd.vial[ks].Position;
-                            ndnew.mvInfo.Destination = nd.vial[kd].Position;
+
+                            ndnew.mvInfo.Source = nd.Vials[ks].Position;
+                            ndnew.mvInfo.Destination = nd.Vials[kd].Position;
                             if (blockdecreaseQ)
                             {
                                 ndnew.mvInfo.Merged = true;
@@ -333,28 +304,30 @@ public static class Global
                     }
                 }
             }
+
             if (state[nblockV - NCOLORS, y].Count > 0)
                 solutionFound = true;
             y++;
         } while (!(solutionFound || newnodes == 0));
-        
+
         if (solutionFound)
         {
             lmin = 99999;
             kmin = 0;
             for (k = 0; k <= state[nblockV - NCOLORS, y - 1].Count - 1; k++)
             {
-                j = new Node(state[nblockV - NCOLORS, y - 1][k]).Nlastmoves();
+                j = new Node(state[nblockV - NCOLORS, y - 1][k]).Nlastmoves(NEMPTYVIALS);
                 if (j < lmin)
                 {
                     kmin = k;
                     lmin = j;
                 }
             }
+
             (state[nblockV - NCOLORS, y - 1][0], state[nblockV - NCOLORS, y - 1][kmin]) =
                 (state[nblockV - NCOLORS, y - 1][kmin], state[nblockV - NCOLORS, y - 1][0]);
         }
-        
+
         Console.WriteLine($"{total} nodes generated");
         Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
     }
