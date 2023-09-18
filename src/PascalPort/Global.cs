@@ -169,8 +169,8 @@ public static class Global
                     kd++;
                 }
 
-                viS = ndcand.vial[ks].getTopInfo();
-                viD = ndcand.vial[kd].getTopInfo();
+                viS = ndcand.vial[ks].GetTopInfo();
+                viD = ndcand.vial[kd].GetTopInfo();
                 if (viS.Empty == NVOLUME)
                 {
                     continue; //source is empty vial
@@ -268,7 +268,7 @@ public static class Global
                     nd = new Node(ndlist[i]);
                     for (ks = 0; ks <= NVIALS - 1; ks++)
                     {
-                        viS = nd.vial[ks].getTopInfo();
+                        viS = nd.vial[ks].GetTopInfo();
                         if (viS.Empty == NVOLUME)
                         {
                             //Console.WriteLine("empty vial");
@@ -283,7 +283,7 @@ public static class Global
                                 continue;
                             }
 
-                            viD = nd.vial[kd].getTopInfo();
+                            viD = nd.vial[kd].GetTopInfo();
                             if (viD.Empty == 0 || //dest vial full
                                 (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) || //dest vial not empty and colors not equal 
                                 (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1)) //dest vial empty and source vial has only one block

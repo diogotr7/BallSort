@@ -68,7 +68,7 @@ public class Node
         var Result = 0;
         for (var i = 0; i <= Global.NVIALS - 1; i++)
         {
-            Result += vial[i].vialBlocks();
+            Result += vial[i].VialBlocks();
         }
 
         return Result;
@@ -97,21 +97,21 @@ public class Node
         for (var i = 1; i <= Global.NCOLORS; i++)
         {
             j = Global.NVIALS - 1;
-            while ((int)vial[j].getTopInfo().TopCol != i)
+            while ((int)vial[j].GetTopInfo().TopCol != i)
             {
                 j--;
             }
 
-            if (vial[j].getTopInfo().Empty == 0)
+            if (vial[j].GetTopInfo().Empty == 0)
             {
                 continue; //vial with this color is full
             }
 
             for (var k = 0; k <= j - 1; k++)
             {
-                if ((int)vial[k].getTopInfo().TopCol == i)
+                if ((int)vial[k].GetTopInfo().TopCol == i)
                 {
-                    for (var n = 0; n <= vial[k].getTopInfo().TopVol - 1; n++)
+                    for (var n = 0; n <= vial[k].GetTopInfo().TopVol - 1; n++)
                     {
                         Result += $"{vial[k].Position + 1}->{vial[j].Position + 1}  ";
                     }
@@ -133,7 +133,7 @@ public class Node
 
         for (var i = 0; i <= Global.NEMPTYVIALS - 1; i++)
         {
-            Result += vial[i].getTopInfo().TopVol;
+            Result += vial[i].GetTopInfo().TopVol;
         }
 
         return Result;

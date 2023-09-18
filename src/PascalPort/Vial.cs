@@ -11,37 +11,35 @@ public class Vial
         Position = position;
     }
     
-    public VialTopInfo getTopInfo()
+    public VialTopInfo GetTopInfo()
     {
-        var Result = new VialTopInfo
+        var res = new VialTopInfo
         {
             TopCol = 0,
-            Empty = Global.NVOLUME,
+            Empty = Balls.Length,
             TopVol = 0
         };
-        if (Balls[Global.NVOLUME - 1] == Ball.Empty)
+        
+        if (Balls[^1] == Ball.Empty)
+            return res;//empty vial
+
+        var cl = Ball.Empty;
+        for (var i = 0; i < Balls.Length; i++)
         {
-            return Result;//empty vial
+            if (Balls[i] == Ball.Empty) continue;
+            
+            cl = Balls[i];
+            res.TopCol = cl;
+            res.Empty = i;
+            break;
         }
 
-        Ball cl = Ball.Empty;
-        for (var i = 0; i <= Global.NVOLUME - 1; i++)
-        {
-            if (Balls[i] != Ball.Empty)
-            {
-                cl = Balls[i];
-                Result.TopCol = cl;
-                Result.Empty = i;
-                break;
-            }
-        }
-
-        Result.TopVol = 1;
-        for (var i = Result.Empty + 1; i <= Global.NVOLUME - 1; i++)
+        res.TopVol = 1;
+        for (var i = res.Empty + 1; i <= Global.NVOLUME - 1; i++)
         {
             if (cl == Balls[i])
             {
-                Result.TopVol++;
+                res.TopVol++;
             }
             else
             {
@@ -49,10 +47,10 @@ public class Vial
             }
         }
 
-        return Result;
+        return res;
     }
     
-    public int vialBlocks()
+    public int VialBlocks()
     {
         var res = 1;
         for (var i = 0; i < Balls.Length - 1; i++)
