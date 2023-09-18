@@ -136,10 +136,10 @@ public static class Global
         addmove = nd.Nlastmoves(); //add last moves seperate
         mv2 = nd.lastmoves();
         
-        src = nd.mvInfo.srcVial;
-        dst = nd.mvInfo.dstVial;
+        src = nd.mvInfo.Source;
+        dst = nd.mvInfo.Destination;
         Result += $"{src + 1}->{dst + 1},";
-        if (nd.mvInfo.merged)
+        if (nd.mvInfo.Merged)
             x--;
         else
             y--;
@@ -190,11 +190,11 @@ public static class Global
                 if (nd.equalQ(ndcand))
                 {
                     nd = new Node(ndlist[i]);
-                    src = nd.mvInfo.srcVial;
-                    dst = nd.mvInfo.dstVial;
+                    src = nd.mvInfo.Source;
+                    dst = nd.mvInfo.Destination;
                     Result += $"{src + 1}->{dst + 1},";
                     solLength++;
-                    if (nd.mvInfo.merged)
+                    if (nd.mvInfo.Merged)
                     {
                         x--;
                     }
@@ -316,16 +316,16 @@ public static class Global
                                 //Form1.Memo1.Lines.Add(Format('Node limit %d exceeded!', [N_MAXNODES]));
                                 return;
                             }
-                            ndnew.mvInfo.srcVial = nd.vial[ks].pos;
-                            ndnew.mvInfo.dstVial = nd.vial[kd].pos;
+                            ndnew.mvInfo.Source = nd.vial[ks].pos;
+                            ndnew.mvInfo.Destination = nd.vial[kd].pos;
                             if (blockdecreaseQ)
                             {
-                                ndnew.mvInfo.merged = true;
+                                ndnew.mvInfo.Merged = true;
                                 state[x + 1, y].Add(ndnew);
                             }
                             else
                             {
-                                ndnew.mvInfo.merged = false;
+                                ndnew.mvInfo.Merged = false;
                                 state[x, y + 1].Add(ndnew);
                                 newnodes++;
                             }

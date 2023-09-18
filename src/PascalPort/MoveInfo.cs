@@ -2,7 +2,18 @@
 
 public struct MoveInfo
 {
-    public byte srcVial; //source and destination of a move
-    public byte dstVial;
-    public bool merged; //move reduced number of blocks or keeps number
+    /// <summary>
+    /// The source vial of a move.
+    /// </summary>
+    public byte Source;
+    
+    /// <summary>
+    /// The destination vial of a move.
+    /// </summary>
+    public byte Destination;
+    
+    /// <summary>
+    ///  no clue
+    /// </summary>
+    public bool Merged;
 }
