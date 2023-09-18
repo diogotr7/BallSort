@@ -23,7 +23,7 @@ public class Node
         vial = new Vial[node.vial.Length];
         for (var i = 0; i < vial.Length; i++)
         {
-            vial[i] = new Vial(node.vial[i].Balls, node.vial[i].pos);
+            vial[i] = new Vial(node.vial[i].Balls, node.vial[i].Position);
         }
 
         hash = node.hash;
@@ -97,23 +97,23 @@ public class Node
         for (var i = 1; i <= Global.NCOLORS; i++)
         {
             j = Global.NVIALS - 1;
-            while (vial[j].getTopInfo().topcol != i)
+            while (vial[j].getTopInfo().TopCol != i)
             {
                 j--;
             }
 
-            if (vial[j].getTopInfo().empty == 0)
+            if (vial[j].getTopInfo().Empty == 0)
             {
                 continue; //vial with this color is full
             }
 
             for (var k = 0; k <= j - 1; k++)
             {
-                if (vial[k].getTopInfo().topcol == i)
+                if (vial[k].getTopInfo().TopCol == i)
                 {
-                    for (var n = 0; n <= vial[k].getTopInfo().topvol - 1; n++)
+                    for (var n = 0; n <= vial[k].getTopInfo().TopVol - 1; n++)
                     {
-                        Result += $"{vial[k].pos + 1}->{vial[j].pos + 1}  ";
+                        Result += $"{vial[k].Position + 1}->{vial[j].Position + 1}  ";
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class Node
 
         for (var i = 0; i <= Global.NEMPTYVIALS - 1; i++)
         {
-            Result += vial[i].getTopInfo().topvol;
+            Result += vial[i].getTopInfo().TopVol;
         }
 
         return Result;

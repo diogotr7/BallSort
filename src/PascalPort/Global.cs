@@ -158,33 +158,33 @@ public static class Global
                 ndcand = new Node(ndlist[i]);
                 
                 ks = 0;
-                while (ndcand.vial[ks].pos != src)
+                while (ndcand.vial[ks].Position != src)
                 {
                     ks++;
                 }
 
                 kd = 0;
-                while (ndcand.vial[kd].pos != dst)
+                while (ndcand.vial[kd].Position != dst)
                 {
                     kd++;
                 }
 
                 viS = ndcand.vial[ks].getTopInfo();
                 viD = ndcand.vial[kd].getTopInfo();
-                if (viS.empty == NVOLUME)
+                if (viS.Empty == NVOLUME)
                 {
                     continue; //source is empty vial
                 }
 
-                if (viD.empty == 0 ||
-                    (viD.empty < NVOLUME && viS.topcol != viD.topcol) ||
-                    (viD.empty == NVOLUME && viS.empty == NVOLUME - 1))
+                if (viD.Empty == 0 ||
+                    (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) ||
+                    (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1))
                 {
                     continue;
                 }
 
-                ndcand.vial[kd].Balls[viD.empty - 1] = (Ball)viS.topcol;
-                ndcand.vial[ks].Balls[viS.empty] = Ball.Empty;
+                ndcand.vial[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
+                ndcand.vial[ks].Balls[viS.Empty] = Ball.Empty;
 
                 SortNode(ndcand, 0, NVIALS - 1);
                 if (nd.equalQ(ndcand))
@@ -269,7 +269,7 @@ public static class Global
                     for (ks = 0; ks <= NVIALS - 1; ks++)
                     {
                         viS = nd.vial[ks].getTopInfo();
-                        if (viS.empty == NVOLUME)
+                        if (viS.Empty == NVOLUME)
                         {
                             //Console.WriteLine("empty vial");
                             continue;//source is empty vial
@@ -284,21 +284,21 @@ public static class Global
                             }
 
                             viD = nd.vial[kd].getTopInfo();
-                            if (viD.empty == 0 || //dest vial full
-                                (viD.empty < NVOLUME && viS.topcol != viD.topcol) || //dest vial not empty and colors not equal 
-                                (viD.empty == NVOLUME && viS.empty == NVOLUME - 1)) //dest vial empty and source vial has only one block
+                            if (viD.Empty == 0 || //dest vial full
+                                (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) || //dest vial not empty and colors not equal 
+                                (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1)) //dest vial empty and source vial has only one block
                             {
                                 //Console.WriteLine("invalid move");
                                 continue;
                             }
 
-                            if (viS.topvol == 1 && viS.empty != NVOLUME - 1)
+                            if (viS.TopVol == 1 && viS.Empty != NVOLUME - 1)
                                 blockdecreaseQ = true;
                             else
                                 blockdecreaseQ = false;
                             ndnew = new Node(nd);
-                            ndnew.vial[kd].Balls[viD.empty - 1] = (Ball)viS.topcol;
-                            ndnew.vial[ks].Balls[viS.empty] = Ball.Empty;
+                            ndnew.vial[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
+                            ndnew.vial[ks].Balls[viS.Empty] = Ball.Empty;
                             SortNode(ndnew, 0, NVIALS - 1);
                             ndnew.hash = ndnew.getHash();
                             if (ndnew.isHashedQ())
@@ -316,8 +316,8 @@ public static class Global
                                 //Form1.Memo1.Lines.Add(Format('Node limit %d exceeded!', [N_MAXNODES]));
                                 return;
                             }
-                            ndnew.mvInfo.Source = nd.vial[ks].pos;
-                            ndnew.mvInfo.Destination = nd.vial[kd].pos;
+                            ndnew.mvInfo.Source = nd.vial[ks].Position;
+                            ndnew.mvInfo.Destination = nd.vial[kd].Position;
                             if (blockdecreaseQ)
                             {
                                 ndnew.mvInfo.Merged = true;
