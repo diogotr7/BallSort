@@ -97,7 +97,7 @@ public class Node
         for (var i = 1; i <= Global.NCOLORS; i++)
         {
             j = Global.NVIALS - 1;
-            while (vial[j].getTopInfo().TopCol != i)
+            while ((int)vial[j].getTopInfo().TopCol != i)
             {
                 j--;
             }
@@ -109,7 +109,7 @@ public class Node
 
             for (var k = 0; k <= j - 1; k++)
             {
-                if (vial[k].getTopInfo().TopCol == i)
+                if ((int)vial[k].getTopInfo().TopCol == i)
                 {
                     for (var n = 0; n <= vial[k].getTopInfo().TopVol - 1; n++)
                     {

@@ -24,12 +24,12 @@ public class Vial
             return Result;//empty vial
         }
 
-        var cl = 0;
+        Ball cl = Ball.Empty;
         for (var i = 0; i <= Global.NVOLUME - 1; i++)
         {
             if (Balls[i] != Ball.Empty)
             {
-                cl = (int)Balls[i];
+                cl = Balls[i];
                 Result.TopCol = cl;
                 Result.Empty = i;
                 break;
@@ -39,7 +39,7 @@ public class Vial
         Result.TopVol = 1;
         for (var i = Result.Empty + 1; i <= Global.NVOLUME - 1; i++)
         {
-            if (cl == (int)Balls[i])
+            if (cl == Balls[i])
             {
                 Result.TopVol++;
             }

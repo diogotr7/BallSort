@@ -2,7 +2,18 @@
 
 public struct VialTopInfo
 {
-    public int Empty; //empty volume of vial
-    public int TopCol; //surface color, 0 for empty vial
-    public int TopVol; //volume of surface color, NVOLUME for empty vial
+    /// <summary>
+    /// How many slots are empty at the top of the vial
+    /// </summary>
+    public int Empty;
+    
+    /// <summary>
+    /// The color of the top of the vial
+    /// </summary>
+    public Ball TopCol;
+    
+    /// <summary>
+    /// How many balls of the top color are at the top of the vial
+    /// </summary>
+    public int TopVol;
 }
