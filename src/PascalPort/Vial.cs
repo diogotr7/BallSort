@@ -2,22 +2,22 @@
 
 public class Vial
 {
-    public Vial(IReadOnlyList<Colors> c, byte pos)
+    public Vial(IReadOnlyList<Ball> c, byte pos)
     {
         if (c.Count != Global.NVOLUME)
         {
             throw new Exception("Vial: c.Length <> NVOLUME");
         }
         
-        color = new Colors[c.Count];
+        Balls = new Ball[c.Count];
         for (var i = 0; i <= Global.NVOLUME - 1; i++)
         {
-            color[i] = c[i];
+            Balls[i] = c[i];
         }
         this.pos = pos;
     }
 
-    public Colors[] color; //colors starting from top of vial
+    public Ball[] Balls; //colors starting from top of vial
     public byte pos; //Index of vial
     
     public VialTopInfo getTopInfo()
@@ -28,7 +28,7 @@ public class Vial
             empty = Global.NVOLUME,
             topvol = 0
         };
-        if (color[Global.NVOLUME - 1] == Colors.EMPTY)
+        if (Balls[Global.NVOLUME - 1] == Ball.Empty)
         {
             return Result;//empty vial
         }
@@ -36,9 +36,9 @@ public class Vial
         var cl = 0;
         for (var i = 0; i <= Global.NVOLUME - 1; i++)
         {
-            if (color[i] != Colors.EMPTY)
+            if (Balls[i] != Ball.Empty)
             {
-                cl = (int)color[i];
+                cl = (int)Balls[i];
                 Result.topcol = cl;
                 Result.empty = i;
                 break;
@@ -48,7 +48,7 @@ public class Vial
         Result.topvol = 1;
         for (var i = Result.empty + 1; i <= Global.NVOLUME - 1; i++)
         {
-            if (cl == (int)color[i])
+            if (cl == (int)Balls[i])
             {
                 Result.topvol++;
             }
@@ -66,13 +66,13 @@ public class Vial
         var Result = 1;
         for (var i = 0; i <= Global.NVOLUME - 2; i++)
         {
-            if (color[i + 1] != color[i])
+            if (Balls[i + 1] != Balls[i])
             {
                 Result++;
             }
         }
 
-        if (color[0] == Colors.EMPTY)
+        if (Balls[0] == Ball.Empty)
         {
             Result--;
         }

@@ -40,7 +40,7 @@ public static class Global
         {
             for (var j = 0; j <= NVOLUME - 1; j++)
             {
-                vialDefinition[i, j] = (Colors)(i + 1);
+                vialDefinition[i, j] = (Ball)(i + 1);
             }
         }
 
@@ -49,7 +49,7 @@ public static class Global
         {
             for (var j = 0; j <= NVOLUME - 1; j++)
             {
-                vialDefinition[i, j] = Colors.EMPTY;
+                vialDefinition[i, j] = Ball.Empty;
             }
         }
     }
@@ -58,9 +58,9 @@ public static class Global
     {
         for (var i = 0; i <= NVOLUME - 1; i++)
         {
-            if (v1.color[i] < v2.color[i])
+            if (v1.Balls[i] < v2.Balls[i])
                 return 1;
-            if (v1.color[i] > v2.color[i])
+            if (v1.Balls[i] > v2.Balls[i])
                 return -1;
         }
 
@@ -183,8 +183,8 @@ public static class Global
                     continue;
                 }
 
-                ndcand.vial[kd].color[viD.empty - 1] = (Colors)viS.topcol;
-                ndcand.vial[ks].color[viS.empty] = Colors.EMPTY;
+                ndcand.vial[kd].Balls[viD.empty - 1] = (Ball)viS.topcol;
+                ndcand.vial[ks].Balls[viS.empty] = Ball.Empty;
 
                 SortNode(ndcand, 0, NVIALS - 1);
                 if (nd.equalQ(ndcand))
@@ -297,8 +297,8 @@ public static class Global
                             else
                                 blockdecreaseQ = false;
                             ndnew = new Node(nd);
-                            ndnew.vial[kd].color[viD.empty - 1] = (Colors)viS.topcol;
-                            ndnew.vial[ks].color[viS.empty] = Colors.EMPTY;
+                            ndnew.vial[kd].Balls[viD.empty - 1] = (Ball)viS.topcol;
+                            ndnew.vial[ks].Balls[viS.empty] = Ball.Empty;
                             SortNode(ndnew, 0, NVIALS - 1);
                             ndnew.hash = ndnew.getHash();
                             if (ndnew.isHashedQ())

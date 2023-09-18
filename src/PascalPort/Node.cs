@@ -23,7 +23,7 @@ public class Node
         vial = new Vial[node.vial.Length];
         for (var i = 0; i < vial.Length; i++)
         {
-            vial[i] = new Vial(node.vial[i].color, node.vial[i].pos);
+            vial[i] = new Vial(node.vial[i].Balls, node.vial[i].pos);
         }
 
         hash = node.hash;
@@ -37,7 +37,7 @@ public class Node
         {
             for (var p = 0; p <= Global.NVOLUME-1; p++)
             {
-                Result ^= Global.hash[(int)vial[v].color[p], p, v];
+                Result ^= Global.hash[(int)vial[v].Balls[p], p, v];
             }
         }
 
@@ -80,7 +80,7 @@ public class Node
         {
             for (var j = 0; j <= Global.NVOLUME - 1; j++)
             {
-                if (vial[i].color[j] != node.vial[i].color[j])
+                if (vial[i].Balls[j] != node.vial[i].Balls[j])
                 {
                     return false;
                 }
@@ -144,7 +144,7 @@ public class Node
         var Result = 0;
         for (var i = 0; i <= Global.NVIALS - 1; i++)
         {
-            if (vial[i].color[Global.NVOLUME - 1] == Colors.EMPTY)
+            if (vial[i].Balls[Global.NVOLUME - 1] == Ball.Empty)
             {
                 Result++;
             }
