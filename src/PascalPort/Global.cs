@@ -39,9 +39,9 @@ public class Global
         hashbits = new Dictionary<uint, ulong>();
     }
 
-    public int Compare(Vial v1, Vial v2)
+    public static int Compare(Vial v1, Vial v2)
     {
-        for (var i = 0; i <= NVOLUME - 1; i++)
+        for (var i = 0; i < v1.Balls.Length; i++)
         {
             if (v1.Balls[i] < v2.Balls[i])
                 return 1;
@@ -52,7 +52,7 @@ public class Global
         return 0;
     }
 
-    public void SortNode(Node node, int iLo, int iHi)
+    public static void SortNode(Node node, int iLo, int iHi)
     {
         var Lo = iLo;
         var Hi = iHi;
