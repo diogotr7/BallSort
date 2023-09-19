@@ -118,7 +118,7 @@ public class Global
                 ndcand.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
                 ndcand.Vials[ks].Balls[viS.Empty] = Ball.Empty;
 
-                ndcand.SortNode(0, NVIALS - 1);
+                ndcand.Sort();
                 if (nd.equalQ(ndcand))
                 {
                     nd = new Node(ndlist[i]);
@@ -171,7 +171,7 @@ public class Global
         //TODO: throw if vialDefinition has wrong size
 
         nd = new Node(vialDefinition, hash);
-        nd.SortNode(0, NVIALS - 1);
+        nd.Sort();
 
         y = 0;
         nblockV = nd.nodeBlocks() + nd.emptyVials() - NEMPTYVIALS;
@@ -231,7 +231,7 @@ public class Global
                             ndnew = new Node(nd);
                             ndnew.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
                             ndnew.Vials[ks].Balls[viS.Empty] = Ball.Empty;
-                            ndnew.SortNode(0, NVIALS - 1);
+                            ndnew.Sort();
                             ndnew.hash = ndnew.getHash(hash);
                             if (ndnew.isHashedQ(hashbits))
                             {

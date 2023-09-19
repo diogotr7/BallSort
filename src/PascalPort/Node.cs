@@ -1,4 +1,4 @@
-﻿namespace PascalPort;
+namespace PascalPort;
 
 public class Node
 {
@@ -158,44 +158,19 @@ public class Node
         return Result;
     }
 
-    private void SortClr()
+    public void Sort()
     {
         Array.Sort(Vials, Compare);
     }
-
-    public void SortNode(int iLo, int iHi)
-    {
-        var Lo = iLo;
-        var Hi = iHi;
-        var Pivot = Vials[(Lo + Hi) / 2];
-        do
-        {
-            while (Compare(Vials[Lo], Pivot) == 1)
-                Lo++;
-            while (Compare(Vials[Hi], Pivot) == -1)
-                Hi--;
-            if (Lo <= Hi)
-            {
-                (Vials[Lo], Vials[Hi]) = (Vials[Hi], Vials[Lo]);
-                Lo++;
-                Hi--;
-            }
-        } while (Lo <= Hi);
-
-        if (Hi > iLo)
-            SortNode(iLo, Hi);
-        if (Lo < iHi)
-            SortNode(Lo, iHi);
-    }
-
-    public static int Compare(Vial v1, Vial v2)
+    
+    private static int Compare(Vial v1, Vial v2)
     {
         for (var i = 0; i < v1.Balls.Length; i++)
         {
             if (v1.Balls[i] < v2.Balls[i])
-                return 1;
-            if (v1.Balls[i] > v2.Balls[i])
                 return -1;
+            if (v1.Balls[i] > v2.Balls[i])
+                return 1;
         }
 
         return 0;
