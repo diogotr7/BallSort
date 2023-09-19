@@ -137,7 +137,6 @@ public class Solver
             }
         }
 
-        Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
         moves.Reverse();
         moves.AddRange(mv2);
         moves1 = moves.ToArray();

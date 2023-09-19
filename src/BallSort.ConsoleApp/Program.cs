@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using BallSort.Core;
 using BallSort.OpenCv;
-using BenchmarkDotNet.Running;
 
 namespace BallSort.ConsoleApp;
 
@@ -10,7 +9,6 @@ public static class Program
     public static void Main(string[] args)
     {
         TestOpenCv();
-        //BenchmarkRunner.Run<Benchmarks>();
         //TestSolve();
     }
 

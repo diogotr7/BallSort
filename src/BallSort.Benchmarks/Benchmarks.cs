@@ -1,7 +1,7 @@
 ﻿using BallSort.Core;
 using BenchmarkDotNet.Attributes;
 
-namespace BallSort.ConsoleApp;
+namespace BallSort.Benchmarks;
 
 [ShortRunJob]
 [MemoryDiagnoser]

@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
@@ -7,12 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BallSort.Core\BallSort.Core.csproj" />
-      <ProjectReference Include="..\BallSort.OpenCv\BallSort.OpenCv.csproj" />
+        <ProjectReference Include="..\BallSort.Core\BallSort.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="game.txt" CopyToOutputDirectory="PreserveNewest"/>
-        <Content Include="screenshot.png" CopyToOutputDirectory="PreserveNewest"/>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.8" />
     </ItemGroup>
 </Project>
