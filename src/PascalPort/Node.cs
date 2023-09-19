@@ -5,7 +5,7 @@ public class Node
     public readonly Vial[] Vials;
     public uint hash;
     public MoveInfo mvInfo;
-    
+
     public Node(VialsDef t, Hash h)
     {
         Vials = new Vial[t.Length];
@@ -17,7 +17,7 @@ public class Node
         hash = getHash(h);
         mvInfo = new MoveInfo();
     }
-    
+
     public Node(Node node)
     {
         Vials = new Vial[node.Vials.Length];
@@ -29,7 +29,7 @@ public class Node
         hash = node.hash;
         mvInfo = node.mvInfo;
     }
-    
+
     public uint getHash(Hash h)
     {
         var Result = 0u;
@@ -64,10 +64,10 @@ public class Node
         var x = 1ul << (int)offset;
         if (!hashbits.TryGetValue(b, out var y))
             hashbits.Add(b, 0);
-        
+
         return (y & x) != 0;
     }
-    
+
     public int nodeBlocks()
     {
         var Result = 0;
@@ -78,7 +78,7 @@ public class Node
 
         return Result;
     }
-    
+
     public bool equalQ(Node node)
     {
         for (var i = 0; i < Vials.Length; i++)
@@ -143,7 +143,7 @@ public class Node
 
         return Result;
     }
-    
+
     public int emptyVials()
     {
         var Result = 0;
@@ -156,5 +156,48 @@ public class Node
         }
 
         return Result;
+    }
+
+    private void SortClr()
+    {
+        Array.Sort(Vials, Compare);
+    }
+
+    public void SortNode(int iLo, int iHi)
+    {
+        var Lo = iLo;
+        var Hi = iHi;
+        var Pivot = Vials[(Lo + Hi) / 2];
+        do
+        {
+            while (Compare(Vials[Lo], Pivot) == 1)
+                Lo++;
+            while (Compare(Vials[Hi], Pivot) == -1)
+                Hi--;
+            if (Lo <= Hi)
+            {
+                (Vials[Lo], Vials[Hi]) = (Vials[Hi], Vials[Lo]);
+                Lo++;
+                Hi--;
+            }
+        } while (Lo <= Hi);
+
+        if (Hi > iLo)
+            SortNode(iLo, Hi);
+        if (Lo < iHi)
+            SortNode(Lo, iHi);
+    }
+
+    public static int Compare(Vial v1, Vial v2)
+    {
+        for (var i = 0; i < v1.Balls.Length; i++)
+        {
+            if (v1.Balls[i] < v2.Balls[i])
+                return 1;
+            if (v1.Balls[i] > v2.Balls[i])
+                return -1;
+        }
+
+        return 0;
     }
 }

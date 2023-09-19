@@ -1,4 +1,4 @@
-﻿// ReSharper disable InconsistentNaming
+// ReSharper disable InconsistentNaming
 
 namespace PascalPort;
 
@@ -37,44 +37,6 @@ public class Global
         }
 
         hashbits = new Dictionary<uint, ulong>();
-    }
-
-    public static int Compare(Vial v1, Vial v2)
-    {
-        for (var i = 0; i < v1.Balls.Length; i++)
-        {
-            if (v1.Balls[i] < v2.Balls[i])
-                return 1;
-            if (v1.Balls[i] > v2.Balls[i])
-                return -1;
-        }
-
-        return 0;
-    }
-
-    public static void SortNode(Node node, int iLo, int iHi)
-    {
-        var Lo = iLo;
-        var Hi = iHi;
-        var Pivot = node.Vials[(Lo + Hi) / 2];
-        do
-        {
-            while (Compare(node.Vials[Lo], Pivot) == 1)
-                Lo++;
-            while (Compare(node.Vials[Hi], Pivot) == -1)
-                Hi--;
-            if (Lo <= Hi)
-            {
-                (node.Vials[Lo], node.Vials[Hi]) = (node.Vials[Hi], node.Vials[Lo]);
-                Lo++;
-                Hi--;
-            }
-        } while (Lo <= Hi);
-
-        if (Hi > iLo)
-            SortNode(node, iLo, Hi);
-        if (Lo < iHi)
-            SortNode(node, Lo, iHi);
     }
 
     public string nearoptimalSolution_single(int nblock, int y0)
@@ -156,7 +118,7 @@ public class Global
                 ndcand.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
                 ndcand.Vials[ks].Balls[viS.Empty] = Ball.Empty;
 
-                SortNode(ndcand, 0, NVIALS - 1);
+                ndcand.SortNode(0, NVIALS - 1);
                 if (nd.equalQ(ndcand))
                 {
                     nd = new Node(ndlist[i]);
@@ -209,7 +171,7 @@ public class Global
         //TODO: throw if vialDefinition has wrong size
 
         nd = new Node(vialDefinition, hash);
-        SortNode(nd, 0, NVIALS - 1);
+        nd.SortNode(0, NVIALS - 1);
 
         y = 0;
         nblockV = nd.nodeBlocks() + nd.emptyVials() - NEMPTYVIALS;
@@ -269,7 +231,7 @@ public class Global
                             ndnew = new Node(nd);
                             ndnew.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
                             ndnew.Vials[ks].Balls[viS.Empty] = Ball.Empty;
-                            SortNode(ndnew, 0, NVIALS - 1);
+                            ndnew.SortNode(0, NVIALS - 1);
                             ndnew.hash = ndnew.getHash(hash);
                             if (ndnew.isHashedQ(hashbits))
                             {
