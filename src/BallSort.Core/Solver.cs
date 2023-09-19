@@ -1,6 +1,6 @@
 // ReSharper disable InconsistentNaming
 
-namespace PascalPort;
+namespace BallSort.Core;
 
 public class Solver
 {
@@ -111,7 +111,6 @@ public class Solver
                 ndcand.Sort();
                 if (!nd.Equals(ndcand)) continue;
                 
-                
                 nd = new Node(ndlist[i]);
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
@@ -130,9 +129,10 @@ public class Solver
             }
         }
 
-        //Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
-        var reversed = string.Join(" | ", r.Split(',').Reverse());
-        reversed += $" | {mv2}";
+        Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
+        var reversed = string.Join("\n", r.Trim(',').Split(',').Reverse());
+        reversed += '\n';
+        reversed += mv2;
         return reversed;
     }
 
@@ -262,7 +262,7 @@ public class Solver
                 (state[nblockV - NCOLORS, y - 1][kmin], state[nblockV - NCOLORS, y - 1][0]);
         }
 
-        //Console.WriteLine($"{total} nodes generated");
-        //Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
+        Console.WriteLine($"{total} nodes generated");
+        Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
     }
 }

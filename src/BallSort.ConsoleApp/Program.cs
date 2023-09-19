@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
+using BallSort.Core;
 using BallSort.OpenCv;
 using BenchmarkDotNet.Running;
-using PascalPort;
 
 namespace BallSort.ConsoleApp;
 
@@ -30,9 +30,34 @@ public static class Program
 
     private static void TestOpenCv()
     {
-        var sw2 = Stopwatch.StartNew();
+        var recognize = Stopwatch.StartNew();
         var recognized = PuzzleRecognizer.RecognizePuzzle("screenshot.png");
-        sw2.Stop();
-        Console.WriteLine($"Recognized puzzle in {sw2.ElapsedMilliseconds} ms");
+        recognize.Stop();
+        Console.WriteLine($"Recognized puzzle in {recognize.ElapsedMilliseconds} ms");
+        
+        //print recognized for debugging purposes
+        for (var i = 0; i < recognized.Length; i++)
+        {
+            for (var j = 0; j < recognized[i].Length; j++)
+            {
+                //0123456789ABCDEF
+                var n = (int)recognized[i][j];
+
+                var s = n switch
+                {
+                    0 => "_",
+                    < 10 => n.ToString(),
+                    _ => ((char)(n - 10 + 'A')).ToString(),
+                };
+                Console.Write(s);
+            }
+            Console.WriteLine();
+        }
+        
+        var solve = Stopwatch.StartNew();
+        var solver = new Solver(recognized.GetSettings());
+        solver.solve_single(recognized);
+        solve.Stop();
+        Console.WriteLine($"Solved puzzle in {solve.ElapsedMilliseconds} ms");
     }
 }

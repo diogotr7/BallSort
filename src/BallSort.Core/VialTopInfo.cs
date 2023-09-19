@@ -1,4 +1,4 @@
-﻿namespace PascalPort;
+﻿namespace BallSort.Core;
 
 public struct VialTopInfo
 {

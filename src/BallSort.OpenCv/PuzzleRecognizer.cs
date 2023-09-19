@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using BallSort.Core;
+using OpenCvSharp;
 using Point = OpenCvSharp.Point;
 
 namespace BallSort.OpenCv;
@@ -6,9 +7,9 @@ namespace BallSort.OpenCv;
 /// <summary>
 /// Reads puzzles from screenshots.
 /// </summary>
-public sealed class PuzzleRecognizer
+public static class PuzzleRecognizer
 {
-    public static VialInfo[] RecognizePuzzle(string fileName)
+    public static VialsDef RecognizePuzzle(string fileName)
     {
         using var src = new Mat(fileName);
         using var cropped = src[new Rect(0, 800, src.Width, src.Height - 800 - 700)];
@@ -61,42 +62,45 @@ public sealed class PuzzleRecognizer
     ///     Used after the image has been preprocessed and analyzed.
     ///     This will turn rects, points and radii into vials and balls.
     /// </summary>
-    private static VialInfo[] Process(Mat cropped, List<Rect> rectangles, CircleSegment[] circles)
+    private static VialsDef Process(Mat cropped, IEnumerable<Rect> rectangles, IEnumerable<CircleSegment> circles)
     {
         var knownColors = new List<Color>();
-        var balls = circles.Select(b =>
+        var balls = circles.Select(circle =>
         {
-            var color = GetColorForCircleSegment(cropped, b);
+            var color = GetMeanColorInCircle(cropped, circle);
             if (!knownColors.Contains(color))
                 knownColors.Add(color);
             
             return new BallInformation
             {
-                Circle = b,
+                Circle = circle,
                 Color = color,
-                ColorIndex = knownColors.IndexOf(color)
+                ColorIndex = knownColors.IndexOf(color) + 1
             };
         }).ToArray();
-        
 
-        var vialRects = rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left).ToArray();
-        var vials = new VialInfo[vialRects.Length];
-        for (var i = 0; i < vialRects.Length; i++)
+        var sortedRectangles = rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left).ToArray();
+        var depth = balls.Count(b => sortedRectangles[0].Contains(b.Circle.Center.ToPoint()));
+
+        var d = new VialsDef(sortedRectangles.Length, depth);
+        for (var i = 0; i < sortedRectangles.Length; i++)
         {
-            var rect = vialRects[i];
+            var rect = sortedRectangles[i];
             var ballsInRect = balls.Where(b => rect.Contains(b.Circle.Center.ToPoint()))
-                .OrderBy(b => b.Circle.Center.Y)
+                .OrderByDescending(b => b.Circle.Center.Y)
                 .ToArray();
-            vials[i] = new VialInfo
+            
+            //if ballsInRect is empty, this is an empty vial
+            for (var j = 0; j < ballsInRect.Length; j++)
             {
-                Balls = ballsInRect
-            };
+                d[i, j] =  (Ball)ballsInRect[j].ColorIndex;
+            }
         }
-        
-        return vials;
+
+        return d;
     }
 
-    private static Color GetColorForCircleSegment(Mat mat, CircleSegment cs)
+    private static Color GetMeanColorInCircle(Mat mat, CircleSegment cs)
     {
         using var circleMat = new Mat(mat.Size(), MatType.CV_8UC1, Scalar.Black);
         Cv2.Circle(circleMat, (int)cs.Center.X, (int)cs.Center.Y, (int)cs.Radius / 2, Scalar.White, 2);
@@ -118,9 +122,4 @@ public sealed class PuzzleRecognizer
             Cv2.Circle(cropped, (int)circle.Center.X, (int)circle.Center.Y, (int)circle.Radius, Scalar.LimeGreen, 2);
         }
     }
-}
-
-public struct VialInfo
-{
-    public BallInformation[] Balls;
 }

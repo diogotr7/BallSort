@@ -40,4 +40,14 @@ public readonly struct Color : IEquatable<Color>
     {
         return 1;
     }
+
+    public static bool operator ==(Color left, Color right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Color left, Color right)
+    {
+        return !(left == right);
+    }
 }

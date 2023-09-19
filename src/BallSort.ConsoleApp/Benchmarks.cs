@@ -1,5 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
-using PascalPort;
+﻿using BallSort.Core;
+using BenchmarkDotNet.Attributes;
 
 namespace BallSort.ConsoleApp;
 

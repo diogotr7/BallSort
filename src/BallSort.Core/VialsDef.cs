@@ -1,4 +1,4 @@
-﻿namespace PascalPort;
+﻿namespace BallSort.Core;
 
 public class VialsDef
 {
@@ -6,6 +6,16 @@ public class VialsDef
     private readonly Ball[][] _vials;
     
     public int Length => _vials.Length;
+
+    public GameSettings GetSettings()
+    {
+        return new GameSettings
+        (
+            _vials.Count(v => v.Any(b => b != Ball.Empty)),
+            _vials.Count(v => v.All(b => b == Ball.Empty)),
+            _vials[0].Length
+        );
+    }
     
     public Ball this[int i, int j]
     {
@@ -15,12 +25,12 @@ public class VialsDef
     
     public Ball[] this[int i] => _vials[i];
 
-    public VialsDef(int x, int y)
+    public VialsDef(int vialCount, int vialDepth)
     {
-        _vials = new Ball[x][];
-        for (var i = 0; i < x; i++)
+        _vials = new Ball[vialCount][];
+        for (var i = 0; i < vialCount; i++)
         {
-            _vials[i] = new Ball[y];
+            _vials[i] = new Ball[vialDepth];
         }
     }
     

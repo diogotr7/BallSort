@@ -1,4 +1,4 @@
-﻿namespace PascalPort;
+﻿namespace BallSort.Core;
 
 /// <summary>
 /// Represents the options for a game
