@@ -7,7 +7,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        var settings = new GameSettings(9, 2, 5);
+        var settings = new GameSettings(9, 2, 7);
 
         // var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = VialsDef.CreateRandom(settings, 69);
