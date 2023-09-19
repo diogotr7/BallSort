@@ -87,7 +87,7 @@ public static class PuzzleRecognizer
         {
             var rect = sortedRectangles[i];
             var ballsInRect = balls.Where(b => rect.Contains(b.Circle.Center.ToPoint()))
-                .OrderByDescending(b => b.Circle.Center.Y)
+                .OrderBy(b => b.Circle.Center.Y)
                 .ToArray();
             
             //if ballsInRect is empty, this is an empty vial
