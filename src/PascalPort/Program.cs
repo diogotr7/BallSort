@@ -12,7 +12,7 @@ internal class Program
         // var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = VialsDef.CreateRandom(settings, 69);
         
-        var game = new Global(settings);
+        var game = new Solver(settings);
 
         var sw = Stopwatch.StartNew();
         game.solve_single(puzzle);

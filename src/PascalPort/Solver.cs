@@ -2,7 +2,7 @@
 
 namespace PascalPort;
 
-public class Global
+public class Solver
 {
     private readonly Random random = new(0);
     public readonly int NCOLORS;
@@ -14,7 +14,7 @@ public class Global
     public readonly List<Node>[,] state;
     public readonly uint[,,] hash;
 
-    public Global(GameSettings settings)
+    public Solver(GameSettings settings)
     {
         NCOLORS = settings.FilledVialCount;
         NEMPTYVIALS = settings.EmptyVialCount;
