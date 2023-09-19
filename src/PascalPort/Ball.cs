@@ -11,10 +11,5 @@ public enum Ball
     Aqua,
     Gray,
     Rose,
-    Olive,
-    Brown,
-    LightBrown,
-    Green,
-    LightBlue,
-    Black
+    Olive
 }
