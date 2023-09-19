@@ -11,7 +11,7 @@ public class Global
     public readonly int NVIALS;
 
     public readonly Dictionary<uint, ulong> hashbits;
-    public readonly State state;
+    public readonly List<Node>[,] state;
     public readonly uint[,,] hash;
 
     public Global(GameSettings settings)
@@ -23,7 +23,15 @@ public class Global
 
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
         const int N_NOTDECREASE = 1000;
-        state = new State(NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1);
+        state = new List<Node>[NCOLORS * (NVOLUME - 1) + 1,N_NOTDECREASE + 1];
+        for (var i = 0; i <= NCOLORS * (NVOLUME - 1); i++)
+        {
+            for (var j = 0; j <= N_NOTDECREASE; j++)
+            {
+                state[i, j] = new List<Node>();
+            }
+        }
+        
         hash = new uint[NCOLORS + 1, NVOLUME, NVIALS];
         for (var i = 0; i <= NCOLORS; i++)
         {
@@ -31,7 +39,7 @@ public class Global
             {
                 for (var k = 0; k <= NVIALS - 1; k++)
                 {
-                    hash[i, j, k] = random.NextUInt32();
+                    hash[i, j, k] = (uint)random.Next(int.MinValue, int.MaxValue);
                 }
             }
         }
