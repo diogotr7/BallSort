@@ -6,7 +6,7 @@ public class Node
     public uint hash;
     public MoveInfo mvInfo;
 
-    public Node(VialsDef t, Hash h)
+    public Node(VialsDef t, uint[,,] h)
     {
         Vials = new Vial[t.Length];
         for (var i = 0; i < t.Length; i++)
@@ -30,7 +30,7 @@ public class Node
         mvInfo = node.mvInfo;
     }
 
-    public uint getHash(Hash h)
+    public uint getHash(uint[,,] h)
     {
         var Result = 0u;
         for (var v = 0; v < Vials.Length; v++)

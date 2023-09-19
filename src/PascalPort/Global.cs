@@ -12,7 +12,7 @@ public class Global
 
     public readonly Dictionary<uint, ulong> hashbits;
     public readonly State state;
-    public readonly Hash hash;
+    public readonly uint[,,] hash;
 
     public Global(GameSettings settings)
     {
@@ -24,7 +24,7 @@ public class Global
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
         const int N_NOTDECREASE = 1000;
         state = new State(NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1);
-        hash = new Hash(NCOLORS + 1, NVOLUME, NVIALS);
+        hash = new uint[NCOLORS + 1, NVOLUME, NVIALS];
         for (var i = 0; i <= NCOLORS; i++)
         {
             for (var j = 0; j <= NVOLUME - 1; j++)
