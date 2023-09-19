@@ -13,9 +13,13 @@ public class Solver
     public readonly Dictionary<uint, ulong> hashbits;
     public readonly List<Node>[,] state;
     public readonly uint[,,] hash;
+    public readonly VialsDef puzzle;
 
-    public Solver(GameSettings settings)
+    public Solver(VialsDef def)
     {
+        puzzle = def;
+        var settings = def.GetSettings();
+        
         NCOLORS = settings.FilledVialCount;
         NEMPTYVIALS = settings.EmptyVialCount;
         NVOLUME = settings.VialDepth;
@@ -47,15 +51,19 @@ public class Solver
         hashbits = new Dictionary<uint, ulong>();
     }
 
-    public string nearoptimalSolution_single(int nblock, int y0)
+    public bool nearoptimalSolution_single(int nblock, int y0, out Move[] moves1)
     {
+        moves1 = Array.Empty<Move>();
         if (state[nblock - NCOLORS, y0].Count == 0)
-            return "No solution. Undo moves or create new puzzle.";
+            return false;
 
         if (nblock == NCOLORS) //puzzle is almost solved
-            return new Node(state[0, 0][0]).LastMoves(NCOLORS);
+        {
+            moves1 =  new Node(state[0, 0][0]).LastMoves(NCOLORS);
+            return moves1.Length == 0;
+        }
 
-        var r = "";
+        var moves = new List<Move>();
 
         var x = nblock - NCOLORS;
         var y = y0;
@@ -65,7 +73,7 @@ public class Solver
 
         var src = nd.MoveInfo.Source;
         var dst = nd.MoveInfo.Destination;
-        r += $"{src + 1}->{dst + 1},";
+        moves.Add(new Move(src + 1, dst + 1));
         if (nd.MoveInfo.Merged)
             x--;
         else
@@ -114,7 +122,7 @@ public class Solver
                 nd = new Node(ndlist[i]);
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
-                r += $"{src + 1}->{dst + 1},";
+                moves.Add(new Move(src + 1, dst + 1));
                 solLength++;
                 if (nd.MoveInfo.Merged)
                 {
@@ -130,16 +138,15 @@ public class Solver
         }
 
         Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
-        var reversed = string.Join("\n", r.Trim(',').Split(',').Reverse());
-        reversed += '\n';
-        reversed += mv2;
-        return reversed;
+        moves.Reverse();
+        moves.AddRange(mv2);
+        moves1 = moves.ToArray();
+        return moves1.Length != 0;
     }
 
-    public void solve_single(VialsDef vialDefinition)
+    public Solution solve_single()
     {
-        //TODO: throw if vialDefinition has wrong size
-        var nd = new Node(vialDefinition, hash);
+        var nd = new Node(puzzle, hash);
         nd.Sort();
 
         var y = 0;
@@ -218,7 +225,7 @@ public class Solver
                             {
                                 //Form1.Memo1.Lines.Add('');
                                 //Form1.Memo1.Lines.Add(Format('Node limit %d exceeded!', [N_MAXNODES]));
-                                return;
+                                return new Solution(false, total, Array.Empty<Move>());
                             }
 
                             ndnew.MoveInfo.Source = nd.Vials[ks].Position;
@@ -262,7 +269,24 @@ public class Solver
                 (state[nblockV - NCOLORS, y - 1][kmin], state[nblockV - NCOLORS, y - 1][0]);
         }
 
-        Console.WriteLine($"{total} nodes generated");
-        Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
+        var solved = nearoptimalSolution_single(nblockV, y - 1, out var moves);
+        
+        return new Solution(solved, total, moves);
     }
 }
+
+public class Solution
+{
+    public bool SolutionFound { get; }
+    public int Nodes { get;  }
+    public Move[] Moves { get; }
+    
+    public Solution(bool solutionFound, int nodes, Move[] moves)
+    {
+        SolutionFound = solutionFound;
+        Nodes = nodes;
+        Moves = moves;
+    }
+}
+
+public readonly record struct Move(int From, int To);

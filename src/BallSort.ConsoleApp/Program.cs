@@ -20,10 +20,10 @@ public static class Program
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = VialsDef.CreateRandom(settings);
 
-        var game = new Solver(settings);
+        var game = new Solver(puzzle);
 
         var sw = Stopwatch.StartNew();
-        game.solve_single(puzzle);
+        game.solve_single();
         sw.Stop();
         Console.WriteLine($"Solved puzzle in {sw.ElapsedMilliseconds} ms");
     }
@@ -55,9 +55,17 @@ public static class Program
         }
         
         var solve = Stopwatch.StartNew();
-        var solver = new Solver(recognized.GetSettings());
-        solver.solve_single(recognized);
+        var solver = new Solver(recognized);
+        var solution = solver.solve_single();
         solve.Stop();
+        
+        Console.WriteLine($"Solution: {solution.SolutionFound}");
+        Console.WriteLine($"Nodes: {solution.Nodes}");
+        foreach (var move in solution.Moves)
+        {
+            Console.WriteLine($"{move.From} -> {move.To}");
+        }
+        
         Console.WriteLine($"Solved puzzle in {solve.ElapsedMilliseconds} ms");
     }
 }

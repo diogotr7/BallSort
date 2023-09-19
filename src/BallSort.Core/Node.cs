@@ -98,9 +98,9 @@ public class Node
         return true;
     }
 
-    public string LastMoves(int ncolors)
+    public Move[] LastMoves(int ncolors)
     {
-        string? r = null;
+        List<Move> moves = new();
         for (var i = 1; i <= ncolors; i++)
         {
             var j = Vials.Length - 1;
@@ -120,20 +120,15 @@ public class Node
                 {
                     for (var n = 0; n <= Vials[k].GetTopInfo().Count - 1; n++)
                     {
-                        r += $"{Vials[k].Position + 1}->{Vials[j].Position + 1}  ";
+                        moves.Add(new Move(Vials[k].Position + 1, Vials[j].Position + 1));
                     }
                 }
             }
         }
 
-        return r ?? "Puzzle is solved!";
+        return moves.ToArray();
     }
-
-    /// <summary>
-///         
-    /// </summary>
-    /// <param name="nemptyvials"></param>
-    /// <returns></returns>
+    
     public int NLastMoves(int nemptyvials)
     {
         var r = 0;
