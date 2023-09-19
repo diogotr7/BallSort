@@ -15,9 +15,9 @@ public class Vial
     {
         var res = new VialTopInfo
         {
-            TopCol = 0,
-            Empty = Balls.Length,
-            TopVol = 0
+            Color = 0,
+            EmptyCount = Balls.Length,
+            Count = 0
         };
         
         if (Balls[^1] == Ball.Empty)
@@ -29,17 +29,17 @@ public class Vial
             if (Balls[i] == Ball.Empty) continue;
             
             cl = Balls[i];
-            res.TopCol = cl;
-            res.Empty = i;
+            res.Color = cl;
+            res.EmptyCount = i;
             break;
         }
 
-        res.TopVol = 1;
-        for (var i = res.Empty + 1; i < Balls.Length; i++)
+        res.Count = 1;
+        for (var i = res.EmptyCount + 1; i < Balls.Length; i++)
         {
             if (cl == Balls[i])
             {
-                res.TopVol++;
+                res.Count++;
             }
             else
             {
@@ -50,6 +50,10 @@ public class Vial
         return res;
     }
     
+    /// <summary>
+    ///     Returns the number of blocks in the vial.
+    /// </summary>
+    /// <returns></returns>
     public int VialBlocks()
     {
         var res = 1;

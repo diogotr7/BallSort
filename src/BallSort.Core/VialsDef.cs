@@ -3,24 +3,24 @@
 public class VialsDef
 {
     //array of array of TColors
-    private readonly Ball[][] _vialsDef;
+    private readonly Ball[][] _vials;
     
-    public int Length => _vialsDef.Length;
+    public int Length => _vials.Length;
     
     public Ball this[int i, int j]
     {
-        get => _vialsDef[i][j];
-        set => _vialsDef[i][j] = value;
+        get => _vials[i][j];
+        set => _vials[i][j] = value;
     }
     
-    public Ball[] this[int i] => _vialsDef[i];
+    public Ball[] this[int i] => _vials[i];
 
     public VialsDef(int x, int y)
     {
-        _vialsDef = new Ball[x][];
+        _vials = new Ball[x][];
         for (var i = 0; i < x; i++)
         {
-            _vialsDef[i] = new Ball[y];
+            _vials[i] = new Ball[y];
         }
     }
     

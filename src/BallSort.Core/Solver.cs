@@ -49,173 +49,136 @@ public class Solver
 
     public string nearoptimalSolution_single(int nblock, int y0)
     {
-        var i = 0;
-        var x = 0;
-        var y = 0;
-        var src = 0;
-        var dst = 0;
-        var ks = 0;
-        var kd = 0;
-        var vmin = 0;
-        var solLength = 0;
-        var addmove = 0;
-        Node nd = null;
-        Node ndcand = null;
-        var ndlist = new List<Node>();
-        VialTopInfo viS;
-        VialTopInfo viD;
-        var resback = "";
-        var mv2 = "";
-
         if (state[nblock - NCOLORS, y0].Count == 0)
             return "No solution. Undo moves or create new puzzle.";
 
         if (nblock == NCOLORS) //puzzle is almost solved
-            return new Node(state[0, 0][0]).lastmoves(NCOLORS);
+            return new Node(state[0, 0][0]).LastMoves(NCOLORS);
 
-        var Result = "";
+        var r = "";
 
-        x = nblock - NCOLORS;
-        y = y0;
-        nd = new Node(state[x, y][0]);
-        addmove = nd.Nlastmoves(NEMPTYVIALS); //add last moves seperate
-        mv2 = nd.lastmoves(NCOLORS);
+        var x = nblock - NCOLORS;
+        var y = y0;
+        var nd = new Node(state[x, y][0]);
+        var addmove = nd.NLastMoves(NEMPTYVIALS); //add last moves seperate
+        var mv2 = nd.LastMoves(NCOLORS);
 
-        src = nd.mvInfo.Source;
-        dst = nd.mvInfo.Destination;
-        Result += $"{src + 1}->{dst + 1},";
-        if (nd.mvInfo.Merged)
+        var src = nd.MoveInfo.Source;
+        var dst = nd.MoveInfo.Destination;
+        r += $"{src + 1}->{dst + 1},";
+        if (nd.MoveInfo.Merged)
             x--;
         else
             y--;
 
-        solLength = 1;
+        var solLength = 1;
         while (x != 0 || y != 0)
         {
-            ndlist = state[x, y];
-            for (i = 0; i <= ndlist.Count - 1; i++)
+            var ndlist = state[x, y];
+            for (var i = 0; i <= ndlist.Count - 1; i++)
             {
-                ndcand = new Node(ndlist[i]);
+                var ndcand = new Node(ndlist[i]);
 
-                ks = 0;
+                var ks = 0;
                 while (ndcand.Vials[ks].Position != src)
                 {
                     ks++;
                 }
 
-                kd = 0;
+                var kd = 0;
                 while (ndcand.Vials[kd].Position != dst)
                 {
                     kd++;
                 }
 
-                viS = ndcand.Vials[ks].GetTopInfo();
-                viD = ndcand.Vials[kd].GetTopInfo();
-                if (viS.Empty == NVOLUME)
+                var viS = ndcand.Vials[ks].GetTopInfo();
+                var viD = ndcand.Vials[kd].GetTopInfo();
+                if (viS.EmptyCount == NVOLUME)
                 {
                     continue; //source is empty vial
                 }
 
-                if (viD.Empty == 0 ||
-                    (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) ||
-                    (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1))
+                if (viD.EmptyCount == 0 ||
+                    (viD.EmptyCount < NVOLUME && viS.Color != viD.Color) ||
+                    (viD.EmptyCount == NVOLUME && viS.EmptyCount == NVOLUME - 1))
                 {
                     continue;
                 }
 
-                ndcand.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
-                ndcand.Vials[ks].Balls[viS.Empty] = Ball.Empty;
+                ndcand.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
+                ndcand.Vials[ks].Balls[viS.EmptyCount] = Ball.Empty;
 
                 ndcand.Sort();
-                if (nd.equalQ(ndcand))
+                if (!nd.Equals(ndcand)) continue;
+                
+                
+                nd = new Node(ndlist[i]);
+                src = nd.MoveInfo.Source;
+                dst = nd.MoveInfo.Destination;
+                r += $"{src + 1}->{dst + 1},";
+                solLength++;
+                if (nd.MoveInfo.Merged)
                 {
-                    nd = new Node(ndlist[i]);
-                    src = nd.mvInfo.Source;
-                    dst = nd.mvInfo.Destination;
-                    Result += $"{src + 1}->{dst + 1},";
-                    solLength++;
-                    if (nd.mvInfo.Merged)
-                    {
-                        x--;
-                    }
-                    else
-                    {
-                        y--;
-                    }
-
-                    break;
+                    x--;
                 }
+                else
+                {
+                    y--;
+                }
+
+                break;
             }
         }
 
-        Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
-        var reversed = string.Join(" | ", Result.Split(',').Reverse());
+        //Console.WriteLine($"Near-Optimal solution in {solLength + addmove} moves");
+        var reversed = string.Join(" | ", r.Split(',').Reverse());
         reversed += $" | {mv2}";
         return reversed;
     }
 
     public void solve_single(VialsDef vialDefinition)
     {
-        Node nd;
-        Node ndnew;
-        int nblockV;
-        int i;
-        int j;
-        int k;
-        int lmin;
-        int kmin;
-        int x;
-        int y;
-        int ks;
-        int kd;
-        int newnodes;
-        int total;
-        List<Node> ndlist;
-        VialTopInfo viS;
-        VialTopInfo viD;
-        bool blockdecreaseQ;
-        bool solutionFound;
-
         //TODO: throw if vialDefinition has wrong size
-
-        nd = new Node(vialDefinition, hash);
+        var nd = new Node(vialDefinition, hash);
         nd.Sort();
 
-        y = 0;
-        nblockV = nd.nodeBlocks() + nd.emptyVials() - NEMPTYVIALS;
-        for (i = 0; i <= nblockV - NCOLORS; i++)
+        var y = 0;
+        var nblockV = nd.NodeBlocks() + nd.EmptyVials() - NEMPTYVIALS;
+        for (var i = 0; i <= nblockV - NCOLORS; i++)
             state[i, y] = new List<Node>();
 
         state[0, 0].Add(nd);
         nd.writeHashbit(hashbits);
-        total = 1;
+        var total = 1;
 
-        solutionFound = false;
+        var solutionFound = false;
+        int newnodes;
+
         do
         {
             newnodes = 0;
-            for (i = 0; i <= nblockV - NCOLORS; i++)
+            for (var i = 0; i <= nblockV - NCOLORS; i++)
                 state[i, y + 1] = new List<Node>(); //prepare next column
 
-            for (x = 0; x <= nblockV - NCOLORS - 1; x++)
+            for (var x = 0; x <= nblockV - NCOLORS - 1; x++)
             {
                 //if stop
                 //application.processmessages
 
-                ndlist = state[x, y];
-                for (i = 0; i <= ndlist.Count - 1; i++)
+                var ndlist = state[x, y];
+                for (var i = 0; i <= ndlist.Count - 1; i++)
                 {
                     nd = new Node(ndlist[i]);
-                    for (ks = 0; ks <= NVIALS - 1; ks++)
+                    for (var ks = 0; ks <= NVIALS - 1; ks++)
                     {
-                        viS = nd.Vials[ks].GetTopInfo();
-                        if (viS.Empty == NVOLUME)
+                        var viS = nd.Vials[ks].GetTopInfo();
+                        if (viS.EmptyCount == NVOLUME)
                         {
                             //Console.WriteLine("empty vial");
                             continue; //source is empty vial
                         }
 
-                        for (kd = 0; kd <= NVIALS - 1; kd++)
+                        for (var kd = 0; kd <= NVIALS - 1; kd++)
                         {
                             if (kd == ks)
                             {
@@ -223,24 +186,25 @@ public class Solver
                                 continue;
                             }
 
-                            viD = nd.Vials[kd].GetTopInfo();
-                            if (viD.Empty == 0 || //dest vial full
-                                (viD.Empty < NVOLUME && viS.TopCol != viD.TopCol) || //dest vial not empty and colors not equal 
-                                (viD.Empty == NVOLUME && viS.Empty == NVOLUME - 1)) //dest vial empty and source vial has only one block
+                            var viD = nd.Vials[kd].GetTopInfo();
+                            if (viD.EmptyCount == 0 || //dest vial full
+                                (viD.EmptyCount < NVOLUME && viS.Color != viD.Color) || //dest vial not empty and colors not equal 
+                                (viD.EmptyCount == NVOLUME && viS.EmptyCount == NVOLUME - 1)) //dest vial empty and source vial has only one block
                             {
                                 //Console.WriteLine("invalid move");
                                 continue;
                             }
 
-                            if (viS.TopVol == 1 && viS.Empty != NVOLUME - 1)
+                            bool blockdecreaseQ;
+                            if (viS.Count == 1 && viS.EmptyCount != NVOLUME - 1)
                                 blockdecreaseQ = true;
                             else
                                 blockdecreaseQ = false;
-                            ndnew = new Node(nd);
-                            ndnew.Vials[kd].Balls[viD.Empty - 1] = (Ball)viS.TopCol;
-                            ndnew.Vials[ks].Balls[viS.Empty] = Ball.Empty;
+                            var ndnew = new Node(nd);
+                            ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
+                            ndnew.Vials[ks].Balls[viS.EmptyCount] = Ball.Empty;
                             ndnew.Sort();
-                            ndnew.hash = ndnew.getHash(hash);
+                            ndnew.Hash = ndnew.getHash(hash);
                             if (ndnew.isHashedQ(hashbits))
                             {
                                 //Console.WriteLine("hash collision");
@@ -257,16 +221,16 @@ public class Solver
                                 return;
                             }
 
-                            ndnew.mvInfo.Source = nd.Vials[ks].Position;
-                            ndnew.mvInfo.Destination = nd.Vials[kd].Position;
+                            ndnew.MoveInfo.Source = nd.Vials[ks].Position;
+                            ndnew.MoveInfo.Destination = nd.Vials[kd].Position;
                             if (blockdecreaseQ)
                             {
-                                ndnew.mvInfo.Merged = true;
+                                ndnew.MoveInfo.Merged = true;
                                 state[x + 1, y].Add(ndnew);
                             }
                             else
                             {
-                                ndnew.mvInfo.Merged = false;
+                                ndnew.MoveInfo.Merged = false;
                                 state[x, y + 1].Add(ndnew);
                                 newnodes++;
                             }
@@ -282,11 +246,11 @@ public class Solver
 
         if (solutionFound)
         {
-            lmin = 99999;
-            kmin = 0;
-            for (k = 0; k <= state[nblockV - NCOLORS, y - 1].Count - 1; k++)
+            var lmin = 99999;
+            var kmin = 0;
+            for (var k = 0; k <= state[nblockV - NCOLORS, y - 1].Count - 1; k++)
             {
-                j = new Node(state[nblockV - NCOLORS, y - 1][k]).Nlastmoves(NEMPTYVIALS);
+                var j = new Node(state[nblockV - NCOLORS, y - 1][k]).NLastMoves(NEMPTYVIALS);
                 if (j < lmin)
                 {
                     kmin = k;
@@ -298,7 +262,7 @@ public class Solver
                 (state[nblockV - NCOLORS, y - 1][kmin], state[nblockV - NCOLORS, y - 1][0]);
         }
 
-        Console.WriteLine($"{total} nodes generated");
-        Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
+        //Console.WriteLine($"{total} nodes generated");
+        //Console.WriteLine(nearoptimalSolution_single(nblockV, y - 1));
     }
 }
