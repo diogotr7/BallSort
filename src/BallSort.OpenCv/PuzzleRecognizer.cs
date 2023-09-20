@@ -1,6 +1,6 @@
-﻿using BallSort.Core;
+﻿using System.Collections.ObjectModel;
+using BallSort.Core;
 using OpenCvSharp;
-using Point = OpenCvSharp.Point;
 
 namespace BallSort.OpenCv;
 
@@ -25,7 +25,7 @@ public static class PuzzleRecognizer
         Cv2.FindContours(
             grey,
             out var contours,
-            out var hierarchy,
+            out _,
             RetrievalModes.External,
             ContourApproximationModes.ApproxNone
         );
@@ -64,29 +64,16 @@ public static class PuzzleRecognizer
     /// </summary>
     private static VialsDef Process(Mat cropped, IEnumerable<Rect> rectangles, IEnumerable<CircleSegment> circles)
     {
-        var knownColors = new List<Color>();
-        var balls = circles.Select(circle =>
-        {
-            var color = GetMeanColorInCircle(cropped, circle);
-            if (!knownColors.Contains(color))
-                knownColors.Add(color);
-            
-            return (Circle: circle, ColorIndex: knownColors.IndexOf(color) + 1);
-        }).ToArray();
+        var balls = ProcessBalls(cropped, circles);
+        var vials = ProcessVials(rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left), balls);
+        var depth = vials.MaxBy(v => v.Count)!.Count;
 
-        var sortedRectangles = rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left).ToArray();
-        var depth = balls.Count(b => sortedRectangles[0].Contains(b.Circle.Center.ToPoint()));
-
-        var d = new VialsDef(sortedRectangles.Length, depth);
-        for (var i = 0; i < sortedRectangles.Length; i++)
+        var d = new VialsDef(vials.Count, depth);
+        for (var i = 0; i < vials.Count; i++)
         {
-            var rect = sortedRectangles[i];
-            var ballsInRect = balls.Where(b => rect.Contains(b.Circle.Center.ToPoint()))
-                .OrderBy(b => b.Circle.Center.Y)
-                .ToArray();
+            var ballsInRect = vials[i];
             
-            //if ballsInRect is empty, this is an empty vial
-            for (var j = 0; j < ballsInRect.Length; j++)
+            for (var j = 0; j < ballsInRect.Count; j++)
             {
                 d[i, j] =  (Ball)ballsInRect[j].ColorIndex;
             }
@@ -95,11 +82,44 @@ public static class PuzzleRecognizer
         return d;
     }
 
-    private static Color GetMeanColorInCircle(Mat mat, CircleSegment cs)
+    private static IReadOnlyList<IReadOnlyList<(CircleSegment Circle, int ColorIndex)>> ProcessVials(IEnumerable<Rect> rectangles, IReadOnlyList<(CircleSegment Circle, int ColorIndex)> balls)
     {
-        using var circleMat = new Mat(mat.Size(), MatType.CV_8UC1, Scalar.Black);
-        Cv2.Circle(circleMat, (int)cs.Center.X, (int)cs.Center.Y, (int)cs.Radius / 2, Scalar.White, 2);
-        return Color.FromScalar(Cv2.Mean(mat, circleMat));
+        var vials = new List<ReadOnlyCollection<(CircleSegment Circle, int ColorIndex)>>();
+        foreach (var rectangle in rectangles)
+        {
+            var ballsInRect = balls.Where(b => rectangle.Contains(b.Circle.Center.ToPoint()))
+                .OrderBy(b => b.Circle.Center.Y)
+                .ToList();
+            
+            //if ballsInRect is empty, this is an empty vial
+            vials.Add(ballsInRect.AsReadOnly());
+        }
+
+        return vials.AsReadOnly();
+    }
+
+    private static IReadOnlyList<(CircleSegment Circle, int ColorIndex)> ProcessBalls(Mat cropped, IEnumerable<CircleSegment> circles)
+    {
+        var knownColors = new List<Color>();
+        var balls2 = new List<(CircleSegment Circle, int ColorIndex)>();
+        
+        foreach (var circle in circles)
+        {
+            var color = GetMeanColorInCircle(cropped, circle);
+            if (!knownColors.Contains(color))
+                knownColors.Add(color);
+
+            balls2.Add((circle, knownColors.IndexOf(color) + 1));
+        }
+
+        return balls2.AsReadOnly();
+
+        static Color GetMeanColorInCircle(Mat mat, CircleSegment cs)
+        {
+            using var circleMat = new Mat(mat.Size(), MatType.CV_8UC1, Scalar.Black);
+            Cv2.Circle(circleMat, (int)cs.Center.X, (int)cs.Center.Y, (int)cs.Radius / 2, Scalar.White, 2);
+            return Color.FromScalar(Cv2.Mean(mat, circleMat));
+        }
     }
 
     private static void DrawRectangles(IEnumerable<Rect> rectangles, Mat cropped)
