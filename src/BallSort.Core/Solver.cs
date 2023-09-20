@@ -51,7 +51,7 @@ public class Solver
         hashbits = new Dictionary<uint, ulong>();
     }
 
-    public bool nearoptimalSolution_single(int nblock, int y0, out Move[] moves1)
+    private bool nearoptimalSolution_single(int nblock, int y0, out Move[] moves1)
     {
         moves1 = Array.Empty<Move>();
         if (state[nblock - NCOLORS, y0].Count == 0)
@@ -68,7 +68,6 @@ public class Solver
         var x = nblock - NCOLORS;
         var y = y0;
         var nd = new Node(state[x, y][0]);
-        var addmove = nd.NLastMoves(NEMPTYVIALS); //add last moves seperate
         var mv2 = nd.LastMoves(NCOLORS);
 
         var src = nd.MoveInfo.Source;

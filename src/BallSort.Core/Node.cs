@@ -9,9 +9,9 @@ public class Node
     public Node(VialsDef def, uint[,,] hash)
     {
         Vials = new Vial[def.Length];
-        for (var i = 0; i < def.Length; i++)
+        for (byte i = 0; i < def.Length; i++)
         {
-            Vials[i] = new Vial(def[i], (byte)i);
+            Vials[i] = new Vial(def[i], i);
         }
 
         Hash = getHash(hash);
@@ -32,16 +32,21 @@ public class Node
 
     public uint getHash(uint[,,] h)
     {
-        var Result = 0u;
-        for (var vial = 0; vial < Vials.Length; vial++)
+        var vialLength = Vials.Length;
+        var ballLength = Vials[0].Balls.Length;
+        
+        var r = 0u;
+        for (var vialIndex = 0; vialIndex < vialLength; vialIndex++)
         {
-            for (var ball = 0; ball < Vials[0].Balls.Length; ball++)
+            var v = Vials[vialIndex];
+            for (var ballIndex = 0; ballIndex < ballLength; ballIndex++)
             {
-                Result ^= h[(int)Vials[vial].Balls[ball], ball, vial];
+                var ball = (int)v.Balls[ballIndex];
+                r ^= h[ball, ballIndex, vialIndex];
             }
         }
 
-        return Result;
+        return r;
     }
 
     //99% confidence this is correct

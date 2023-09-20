@@ -1,6 +1,6 @@
 ﻿namespace BallSort.Core;
 
-public struct VialTopInfo
+public record struct VialTopInfo
 {
     /// <summary>
     /// How many slots are empty at the top of the vial
