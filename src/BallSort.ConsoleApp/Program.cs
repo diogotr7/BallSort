@@ -17,13 +17,16 @@ public static class Program
         var settings = new GameSettings(8, 2, 4);
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = VialsDef.CreateRandom(settings);
+        PrintBoard(puzzle);
 
         var game = new Solver(puzzle);
 
-        var sw = Stopwatch.StartNew();
-        var result = game.solve_single();
-        sw.Stop();
-        Console.WriteLine($"Solved puzzle in {sw.ElapsedMilliseconds} ms with {result.Moves.Length} moves");
+        var solve = Stopwatch.StartNew();
+        var solution = game.solve_single();
+        solve.Stop();
+        
+        PrintResult(solution);
+        Console.WriteLine($"Took {solve.ElapsedMilliseconds}ms ");
     }
 
     private static void TestOpenCv()
@@ -33,7 +36,18 @@ public static class Program
         recognize.Stop();
         Console.WriteLine($"Recognized puzzle in {recognize.ElapsedMilliseconds} ms");
         
-        //print recognized for debugging purposes
+        PrintBoard(recognized);
+        var solve = Stopwatch.StartNew();
+        var solver = new Solver(recognized);
+        var solution = solver.solve_single();
+        solve.Stop();
+
+        PrintResult(solution);
+        Console.WriteLine($"Took {solve.ElapsedMilliseconds}ms ");
+    }
+
+    private static void PrintBoard(VialsDef recognized)
+    {
         for (var i = 0; i < recognized.Length; i++)
         {
             for (var j = 0; j < recognized[i].Length; j++)
@@ -49,14 +63,13 @@ public static class Program
                 };
                 Console.Write(s);
             }
+
             Console.WriteLine();
         }
-        
-        var solve = Stopwatch.StartNew();
-        var solver = new Solver(recognized);
-        var solution = solver.solve_single();
-        solve.Stop();
-        
+    }
+
+    private static void PrintResult(Solution solution)
+    {
         Console.WriteLine($"Solution: {solution.SolutionFound}");
         Console.WriteLine($"Nodes: {solution.Nodes}");
         foreach (var move in solution.Moves)
@@ -64,6 +77,6 @@ public static class Program
             Console.WriteLine($"{move.From} -> {move.To}");
         }
         
-        Console.WriteLine($"Solved puzzle in {solve.ElapsedMilliseconds} ms with {solution.Moves.Length} moves");
+        Console.WriteLine($"Solved puzzle  with {solution.Moves.Length} moves");
     }
 }
