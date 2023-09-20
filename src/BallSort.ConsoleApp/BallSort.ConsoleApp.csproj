@@ -14,5 +14,6 @@
     <ItemGroup>
         <Content Include="game.txt" CopyToOutputDirectory="PreserveNewest"/>
         <Content Include="screenshot.png" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="Screenshot_20230920_133424_Sorter_It_Puzzle.png" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 </Project>

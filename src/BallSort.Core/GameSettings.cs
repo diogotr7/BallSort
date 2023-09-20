@@ -16,11 +16,6 @@ public class GameSettings
     public int EmptyVialCount { get; }
     
     /// <summary>
-    /// How many total vials the game starts with
-    /// </summary>
-    public int TotalVialCount => FilledVialCount + EmptyVialCount;
-    
-    /// <summary>
     /// How many balls each vial can hold
     /// </summary>
     public int VialDepth { get; }

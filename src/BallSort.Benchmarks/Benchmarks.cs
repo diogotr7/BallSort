@@ -7,24 +7,29 @@ namespace BallSort.Benchmarks;
 [MemoryDiagnoser]
 public class Benchmarks
 {
-    [ParamsSource(nameof(Settings))]
-    public GameSettings GameSettings { get; set; } 
-
-    [Params(0, 1)] public int Seed { get; set; } = 0;
+    [ParamsSource(nameof(Seeds))] public int Seed { get; set; } = 0;
+    
+    [ParamsSource(nameof(VialCounts))] public int VialCount { get; set; } = 0;
 
     [Benchmark]
     public void Solve()
     {
-        var settings = GameSettings;
+        var settings = new GameSettings(VialCount, 2, 4);
         var seed = Seed;
         var puzzle = VialsDef.CreateRandom(settings, seed);
         var game = new Solver(puzzle);
         game.solve_single();
     }
     
-    public static IEnumerable<GameSettings> Settings()
+    public static IEnumerable<int> Seeds()
     {
-        yield return new GameSettings(2, 1, 4);
-        yield return new GameSettings(6, 2, 4);
+        yield return 0;
+    }
+    
+    public static IEnumerable<int> VialCounts()
+    {
+        yield return 4;
+        yield return 6;
+        yield return 8;
     }
 }

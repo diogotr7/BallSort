@@ -31,11 +31,8 @@ public static class PuzzleRecognizer
             RetrievalModes.External,
             ContourApproximationModes.ApproxNone
         );
-
-        //convert contours to actual rectangles, ignore small ones
-        var rectangles = contours.Where(contour => Cv2.ContourArea(contour) > 1000)
-            .Select(Cv2.BoundingRect)
-            .ToList();
+        
+        var rectangles = contours.Select(Cv2.BoundingRect).ToList();
         
         //circle detection
         var circles = Cv2.HoughCircles(
@@ -128,7 +125,7 @@ public static class PuzzleRecognizer
     {
         foreach (var rectangle in rectangles)
         {
-            Cv2.Rectangle(cropped, rectangle, Scalar.LimeGreen, 2);
+            Cv2.Rectangle(cropped, rectangle, Scalar.Red, 2);
         }
     }
 
@@ -136,7 +133,7 @@ public static class PuzzleRecognizer
     {
         foreach (var circle in circles)
         {
-            Cv2.Circle(cropped, (int)circle.Center.X, (int)circle.Center.Y, (int)circle.Radius, Scalar.LimeGreen, 2);
+            Cv2.Circle(cropped, (int)circle.Center.X, (int)circle.Center.Y, (int)circle.Radius, Scalar.LimeGreen, 4);
         }
     }
 }

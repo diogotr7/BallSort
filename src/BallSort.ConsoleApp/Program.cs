@@ -8,28 +8,28 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        TestOpenCv();
-        //TestSolve();
+        //TestOpenCv();
+        TestSolve();
     }
 
     private static void TestSolve()
     {
-        var settings = new GameSettings(4, 2, 4);
+        var settings = new GameSettings(8, 2, 4);
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = VialsDef.CreateRandom(settings);
 
         var game = new Solver(puzzle);
 
         var sw = Stopwatch.StartNew();
-        game.solve_single();
+        var result = game.solve_single();
         sw.Stop();
-        Console.WriteLine($"Solved puzzle in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine($"Solved puzzle in {sw.ElapsedMilliseconds} ms with {result.Moves.Length} moves");
     }
 
     private static void TestOpenCv()
     {
         var recognize = Stopwatch.StartNew();
-        var recognized = PuzzleRecognizer.RecognizePuzzle("screenshot.png");
+        var recognized = PuzzleRecognizer.RecognizePuzzle("Screenshot_20230920_133424_Sorter_It_Puzzle.png");
         recognize.Stop();
         Console.WriteLine($"Recognized puzzle in {recognize.ElapsedMilliseconds} ms");
         
@@ -64,6 +64,6 @@ public static class Program
             Console.WriteLine($"{move.From} -> {move.To}");
         }
         
-        Console.WriteLine($"Solved puzzle in {solve.ElapsedMilliseconds} ms");
+        Console.WriteLine($"Solved puzzle in {solve.ElapsedMilliseconds} ms with {solution.Moves.Length} moves");
     }
 }
