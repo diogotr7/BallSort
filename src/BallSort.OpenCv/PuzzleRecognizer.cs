@@ -71,12 +71,7 @@ public static class PuzzleRecognizer
             if (!knownColors.Contains(color))
                 knownColors.Add(color);
             
-            return new BallInformation
-            {
-                Circle = circle,
-                Color = color,
-                ColorIndex = knownColors.IndexOf(color) + 1
-            };
+            return (Circle: circle, ColorIndex: knownColors.IndexOf(color) + 1);
         }).ToArray();
 
         var sortedRectangles = rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left).ToArray();
