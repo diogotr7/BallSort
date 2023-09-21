@@ -2,7 +2,7 @@
 
 namespace BallSort.Core;
 
-public class Solver
+public sealed class Solver
 {
     private readonly Random random = new(0);
     public readonly int NCOLORS;
@@ -113,7 +113,7 @@ public class Solver
                 }
 
                 ndcand.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
-                ndcand.Vials[ks].Balls[viS.EmptyCount] = Ball.Empty;
+                ndcand.Vials[ks].Balls[viS.EmptyCount] = 0;
 
                 ndcand.Sort();
                 if (!nd.Equals(ndcand)) continue;
@@ -207,7 +207,7 @@ public class Solver
                                 blockdecreaseQ = false;
                             var ndnew = new Node(nd);
                             ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
-                            ndnew.Vials[ks].Balls[viS.EmptyCount] = Ball.Empty;
+                            ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
                             ndnew.Sort();
                             ndnew.Hash = ndnew.getHash(hash);
                             if (ndnew.isHashedQ(hashbits))

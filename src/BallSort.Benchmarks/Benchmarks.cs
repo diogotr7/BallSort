@@ -3,7 +3,6 @@ using BenchmarkDotNet.Attributes;
 
 namespace BallSort.Benchmarks;
 
-[ShortRunJob]
 [MemoryDiagnoser]
 public class Benchmarks
 {
@@ -24,12 +23,11 @@ public class Benchmarks
     public static IEnumerable<int> Seeds()
     {
         yield return 0;
+        yield return 01;
     }
     
     public static IEnumerable<int> VialCounts()
     {
-        yield return 4;
-        yield return 6;
         yield return 8;
     }
 }

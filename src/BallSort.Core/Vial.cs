@@ -1,11 +1,11 @@
 ﻿namespace BallSort.Core;
 
-public class Vial
+public sealed class Vial
 {
-    public readonly Ball[] Balls;
+    public readonly int[] Balls;
     public readonly byte Position;
 
-    public Vial(IEnumerable<Ball> b, byte position)
+    public Vial(IEnumerable<int> b, byte position)
     {
         Balls = b.ToArray();
         Position = position;
@@ -13,7 +13,7 @@ public class Vial
 
     public VialTopInfo GetTopInfo()
     {
-        if (Balls[^1] == Ball.Empty)
+        if (IsEmpty())
         {
             return new VialTopInfo
             {
@@ -34,14 +34,14 @@ public class Vial
         foreach (var ball in Balls)
         {
             //if the ball is empty, increment empty and continue
-            if (ball == Ball.Empty)
+            if (ball == 0)
             {
                 empty++;
                 continue;
             }
 
             //if the previous color was empty, but the new color is not, set the previous color to the new color and increment count
-            if (previousBall == Ball.Empty)
+            if (previousBall == 0)
             {
                 previousBall = ball;
                 count++;
@@ -81,11 +81,16 @@ public class Vial
             }
         }
 
-        if (Balls[0] == Ball.Empty)
+        if (Balls[0] == 0)
         {
             res--;
         }
 
         return res;
+    }
+    
+    public bool IsEmpty()
+    {
+        return Balls[^1] == 0;
     }
 }

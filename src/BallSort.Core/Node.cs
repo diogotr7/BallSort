@@ -1,6 +1,6 @@
 namespace BallSort.Core;
 
-public class Node
+public sealed class Node
 {
     public readonly Vial[] Vials;
     public uint Hash;
@@ -152,7 +152,7 @@ public class Node
     /// <returns></returns>
     public int EmptyVials()
     {
-        return Vials.Count(vial => vial.Balls[^1] == Ball.Empty);
+        return Vials.Count(vial => vial.IsEmpty());
     }
 
     public void Sort()

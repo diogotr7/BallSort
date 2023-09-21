@@ -1,9 +1,8 @@
 ﻿namespace BallSort.Core;
 
-public class VialsDef
+public sealed class VialsDef
 {
-    //array of array of TColors
-    private readonly Ball[][] _vials;
+    private readonly int[][] _vials;
     
     public int Length => _vials.Length;
 
@@ -11,26 +10,26 @@ public class VialsDef
     {
         return new GameSettings
         (
-            _vials.Count(v => v.Any(b => b != Ball.Empty)),
-            _vials.Count(v => v.All(b => b == Ball.Empty)),
+            _vials.Count(v => v.Any(b => b != 0)),
+            _vials.Count(v => v.All(b => b == 0)),
             _vials[0].Length
         );
     }
     
-    public Ball this[int i, int j]
+    public int this[int i, int j]
     {
         get => _vials[i][j];
         set => _vials[i][j] = value;
     }
     
-    public Ball[] this[int i] => _vials[i];
+    public int[] this[int i] => _vials[i];
 
     public VialsDef(int vialCount, int vialDepth)
     {
-        _vials = new Ball[vialCount][];
+        _vials = new int[vialCount][];
         for (var i = 0; i < vialCount; i++)
         {
-            _vials[i] = new Ball[vialDepth];
+            _vials[i] = new int[vialDepth];
         }
     }
     
@@ -42,7 +41,7 @@ public class VialsDef
         {
             for (var j = 0; j < lines[i].Length; j++)
             {
-                result[i, j] = (Ball)int.Parse(lines[i][j].ToString());
+                result[i, j] = int.Parse(lines[i][j].ToString());
             }
         }
 
@@ -65,7 +64,7 @@ public class VialsDef
         {
             for (var j = 0; j < vialDepth; j++)
             {
-                vialDefinition[i, j] = (Ball)(i + 1);
+                vialDefinition[i, j] = i + 1;
             }
         }
 
@@ -74,7 +73,7 @@ public class VialsDef
         {
             for (var j = 0; j < vialDepth; j++)
             {
-                vialDefinition[i, j] = Ball.Empty;
+                vialDefinition[i, j] = 0;
             }
         }
 

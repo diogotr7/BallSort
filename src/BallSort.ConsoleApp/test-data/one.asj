@@ -1,0 +1,30 @@
+[
+  {
+    "Type": "ActionsModule.Actions.CropAction",
+    "Options": {
+      "X": 0.0,
+      "Y": 732.0,
+      "Width": 1080.0,
+      "Height": 1063.0
+    }
+  },
+  {
+    "Type": "ActionsModule.Actions.ColorCVTAction",
+    "Options": {
+      "ColorConversion": 6
+    }
+  },
+  {
+    "Type": "ActionsModule.Actions.HoughCircles",
+    "Options": {
+      "DP": 4.0,
+      "MinDist": 66.0,
+      "Param1": 100.0,
+      "Param2": 100.0,
+      "MinRadius": 35,
+      "MaxRadius": 40,
+      "HoughMethod": 3,
+      "Color": "#FFFF0000"
+    }
+  }
+]

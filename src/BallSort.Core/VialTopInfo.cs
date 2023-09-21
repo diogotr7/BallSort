@@ -10,7 +10,7 @@ public record struct VialTopInfo
     /// <summary>
     /// The color of the top of the vial
     /// </summary>
-    public Ball Color;
+    public int Color;
     
     /// <summary>
     /// How many balls of the top color are at the top of the vial

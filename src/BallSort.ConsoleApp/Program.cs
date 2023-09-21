@@ -8,8 +8,12 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        //TestOpenCv();
-        TestSolve();
+        var screenshots = Path.Combine(Environment.CurrentDirectory, "test-data");
+        foreach (var file in Directory.EnumerateFiles(screenshots, "*.png"))
+        {
+            TestOpenCv(file);
+        }
+//        TestSolve();
     }
 
     private static void TestSolve()
@@ -29,10 +33,10 @@ public static class Program
         Console.WriteLine($"Took {solve.ElapsedMilliseconds}ms ");
     }
 
-    private static void TestOpenCv()
+    private static void TestOpenCv(string fileName)
     {
         var recognize = Stopwatch.StartNew();
-        var recognized = PuzzleRecognizer.RecognizePuzzle("Screenshot_20230920_133424_Sorter_It_Puzzle.png");
+        var recognized = PuzzleRecognizer.RecognizePuzzle(fileName);
         recognize.Stop();
         Console.WriteLine($"Recognized puzzle in {recognize.ElapsedMilliseconds} ms");
         

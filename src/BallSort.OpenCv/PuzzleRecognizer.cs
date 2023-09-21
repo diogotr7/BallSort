@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using BallSort.Core;
 using OpenCvSharp;
 
@@ -15,17 +16,19 @@ public static class PuzzleRecognizer
         var topPortion = src.Height / 4;
         //crop off top and bottom 1/4 of image. This removes the top and bottom bars leaving only the vials.
         using var cropped = src[new Rect(0, topPortion, src.Width, src.Height - topPortion * 2)];
-        using var grey = new Mat();
         
         //greyscale
-        Cv2.CvtColor(cropped, grey, ColorConversionCodes.BGR2GRAY);
+        using var gray = new Mat();
+        Cv2.CvtColor(cropped, gray, ColorConversionCodes.BGR2GRAY);
         
+
         //edge detection
-        Cv2.Canny(grey, grey, 80, 160);        
+        using var canny = new Mat();
+        Cv2.Canny(gray, canny, 80, 160);        
         
         //detect vial rectangles
         Cv2.FindContours(
-            grey,
+            canny,
             out var contours,
             out _,
             RetrievalModes.External,
@@ -36,27 +39,31 @@ public static class PuzzleRecognizer
         
         //circle detection
         var circles = Cv2.HoughCircles(
-            grey,
+            gray,
             HoughModes.Gradient,
-            3,
-            68,
+            4,
+            50,
             param1:100,
             param2: 100,
-            minRadius: 32,
-            maxRadius: 39
+            minRadius: 30,
+            maxRadius: 40
         );
         
         #if DEBUG
-        DrawCircles(circles, cropped);
-        DrawRectangles(rectangles, cropped);
+        Cv2.ImWrite("gray.png", gray);
+        Cv2.ImWrite("canny.png", canny);
         
-        //save to new file
-        Cv2.ImWrite("circles.png", cropped);
+        using var debug = cropped;
+        DrawCircles(circles, debug);
+        DrawRectangles(rectangles, debug);
+        
+        Cv2.ImWrite("debug.png", debug);
+        
         #endif
         
         return Process(cropped, rectangles, circles);
     }
-    
+
     /// <summary>
     ///     Used after the image has been preprocessed and analyzed.
     ///     This will turn rects, points and radii into vials and balls.
@@ -67,6 +74,9 @@ public static class PuzzleRecognizer
         var vials = ProcessVials(rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left), balls);
         var depth = vials.MaxBy(v => v.Count)!.Count;
 
+        if (balls.Count % depth != 0)
+            throw new Exception("unexpected number of balls, probably opencv failed to detect all balls");
+
         var d = new VialsDef(vials.Count, depth);
         for (var i = 0; i < vials.Count; i++)
         {
@@ -74,7 +84,7 @@ public static class PuzzleRecognizer
             
             for (var j = 0; j < ballsInRect.Count; j++)
             {
-                d[i, j] =  (Ball)ballsInRect[j].ColorIndex;
+                d[i, j] =  ballsInRect[j].ColorIndex;
             }
         }
 
