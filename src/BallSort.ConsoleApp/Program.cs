@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using BallSort.Core;
 using BallSort.OpenCv;
 
@@ -12,8 +13,9 @@ public static class Program
         foreach (var file in Directory.EnumerateFiles(screenshots, "*.png"))
         {
             TestOpenCv(file);
+            //PrepareTestData(file);
         }
-//        TestSolve();
+        //TestSolve();
     }
 
     private static void TestSolve()
@@ -21,7 +23,7 @@ public static class Program
         var settings = new GameSettings(8, 2, 4);
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = Puzzle.CreateRandom(settings);
-        PrintBoard(puzzle);
+        puzzle.Dump(Console.Out);
 
         var game = new Solver(puzzle);
 
@@ -40,7 +42,7 @@ public static class Program
         recognize.Stop();
         Console.WriteLine($"Recognized puzzle in {recognize.ElapsedMilliseconds} ms");
         
-        PrintBoard(recognized);
+        recognized.Dump(Console.Out);
         var solve = Stopwatch.StartNew();
         var solver = new Solver(recognized);
         var solution = solver.solve_single();
@@ -50,26 +52,21 @@ public static class Program
         Console.WriteLine($"Took {solve.ElapsedMilliseconds}ms ");
     }
 
-    private static void PrintBoard(Puzzle recognized)
+    private static void PrepareTestData(string fileName)
     {
-        for (var i = 0; i < recognized.VialCount; i++)
-        {
-            for (var j = 0; j < recognized[i].Length; j++)
-            {
-                //0123456789ABCDEF
-                var n = (int)recognized[i][j];
-
-                var s = n switch
-                {
-                    0 => "_",
-                    < 10 => n.ToString(),
-                    _ => ((char)(n - 10 + 'A')).ToString(),
-                };
-                Console.Write(s);
-            }
-
-            Console.WriteLine();
-        }
+        var filenameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        var filenameText = filenameWithoutExtension + ".txt";
+        var recognized = PuzzleRecognizer.RecognizePuzzle(fileName);
+        var writer = File.CreateText(Path.Combine(Environment.CurrentDirectory,"..", "..","..", "test-data", filenameText));
+        recognized.Dump(writer);
+        writer.Close();
+        
+        var filenameJson = filenameWithoutExtension + ".json";
+        var sol = new Solver(recognized);
+        var solution = sol.solve_single();
+        var json = JsonSerializer.Serialize(solution);
+        File.WriteAllText(Path.Combine(Environment.CurrentDirectory,"..", "..","..", "test-data", filenameJson), json);
+        
     }
 
     private static void PrintResult(Solution solution)

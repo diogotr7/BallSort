@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallSort.Benchmarks", "Ball
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallSort.Api", "BallSort.Api\BallSort.Api.csproj", "{B7EEAC7D-F38E-4315-A51B-1A3CA76FCBFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallSort.Tests", "BallSort.Tests\BallSort.Tests.csproj", "{50274A92-6B3A-441B-81C5-657FB4B0AB2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{B7EEAC7D-F38E-4315-A51B-1A3CA76FCBFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7EEAC7D-F38E-4315-A51B-1A3CA76FCBFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7EEAC7D-F38E-4315-A51B-1A3CA76FCBFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50274A92-6B3A-441B-81C5-657FB4B0AB2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50274A92-6B3A-441B-81C5-657FB4B0AB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50274A92-6B3A-441B-81C5-657FB4B0AB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50274A92-6B3A-441B-81C5-657FB4B0AB2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

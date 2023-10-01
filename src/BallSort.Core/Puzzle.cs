@@ -3,7 +3,7 @@
 public sealed class Puzzle
 {
     private readonly int[][] _vials;
-    
+
     public int VialCount => _vials.Length;
 
     public GameSettings GetSettings()
@@ -15,13 +15,13 @@ public sealed class Puzzle
             _vials[0].Length
         );
     }
-    
+
     public int this[int i, int j]
     {
         get => _vials[i][j];
         set => _vials[i][j] = value;
     }
-    
+
     public int[] this[int i] => _vials[i];
 
     public Puzzle(int vialCount, int vialDepth)
@@ -32,7 +32,7 @@ public sealed class Puzzle
             _vials[i] = new int[vialDepth];
         }
     }
-    
+
     public static Puzzle Parse(string s)
     {
         var lines = s.Split(Environment.NewLine);
@@ -41,34 +41,58 @@ public sealed class Puzzle
         {
             for (var j = 0; j < lines[i].Length; j++)
             {
-                result[i, j] = int.Parse(lines[i][j].ToString());
+                result[i, j] = GetInt(lines[i][j]);
             }
         }
 
         return result;
     }
-    
+
     public void Dump(TextWriter writer)
     {
         for (var i = 0; i < VialCount; i++)
         {
-            for (var j = 0; j < _vials[i].Length; j++)
+            for (var j = 0; j < this[i].Length; j++)
             {
-                writer.Write(_vials[i][j]);
+                writer.Write(GetChar(this[i][j]));
             }
-            writer.WriteLine();
+
+            if (i != VialCount - 1)
+                writer.WriteLine();
         }
     }
-    
+
+    private static char GetChar(int n)
+    {
+        //0123456789ABCDEF etc
+        return n switch
+        {
+            0 => '_',
+            < 10 => (char)(n + '0'),
+            _ => (char)(n - 10 + 'A'),
+        };
+    }
+
+    private static int GetInt(char c)
+    {
+        //0123456789ABCDEF etc
+        return c switch
+        {
+            '_' => 0,
+            < 'A' => c - '0',
+            _ => c - 'A' + 10,
+        };
+    }
+
     public static Puzzle CreateRandom(GameSettings gameSettings, int? seed = null)
     {
         var random = new Random(seed ?? Environment.TickCount);
-        
+
         var fullVialCount = gameSettings.FilledVialCount;
         var emptyVialCount = gameSettings.EmptyVialCount;
         var vialDepth = gameSettings.VialDepth;
         var totalVialCount = fullVialCount + emptyVialCount;
-        
+
         var vialDefinition = new Puzzle(totalVialCount, vialDepth);
 
         //full vials
