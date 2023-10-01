@@ -49,7 +49,7 @@ public static class PuzzleRecognizer
             maxRadius: 40
         );
         
-        #if DEBUG
+        #if TRACE
         Cv2.ImWrite("gray.png", gray);
         Cv2.ImWrite("canny.png", canny);
         
@@ -58,7 +58,6 @@ public static class PuzzleRecognizer
         DrawRectangles(rectangles, debug);
         
         Cv2.ImWrite("debug.png", debug);
-        
         #endif
         
         return Process(cropped, rectangles, circles);
