@@ -59,7 +59,7 @@ public sealed class Solver
 
         if (nblock == NCOLORS) //puzzle is almost solved
         {
-            moves1 =  new Node(state[0, 0][0]).LastMoves(NCOLORS);
+            moves1 =  state[0, 0][0].LastMoves(NCOLORS);
             return moves1.Length == 0;
         }
 
@@ -67,7 +67,7 @@ public sealed class Solver
 
         var x = nblock - NCOLORS;
         var y = y0;
-        var nd = new Node(state[x, y][0]);
+        var nd = state[x, y][0];
         var mv2 = nd.LastMoves(NCOLORS);
 
         var src = nd.MoveInfo.Source;
@@ -84,6 +84,7 @@ public sealed class Solver
             var ndlist = state[x, y];
             for (var i = 0; i <= ndlist.Count - 1; i++)
             {
+                //keep
                 var ndcand = new Node(ndlist[i]);
 
                 var ks = 0;
@@ -118,7 +119,7 @@ public sealed class Solver
                 ndcand.Sort();
                 if (!nd.Equals(ndcand)) continue;
                 
-                nd = new Node(ndlist[i]);
+                nd = ndlist[i];
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
                 moves.Add(new Move(src + 1, dst + 1));
@@ -173,7 +174,7 @@ public sealed class Solver
                 var ndlist = state[x, y];
                 for (var i = 0; i <= ndlist.Count - 1; i++)
                 {
-                    nd = new Node(ndlist[i]);
+                    nd = ndlist[i];
                     for (var ks = 0; ks <= NVIALS - 1; ks++)
                     {
                         var viS = nd.Vials[ks].GetTopInfo();
@@ -255,7 +256,7 @@ public sealed class Solver
             var kmin = 0;
             for (var k = 0; k <= state[nblockV - NCOLORS, y - 1].Count - 1; k++)
             {
-                var j = new Node(state[nblockV - NCOLORS, y - 1][k]).NLastMoves(NEMPTYVIALS);
+                var j = state[nblockV - NCOLORS, y - 1][k].NLastMoves(NEMPTYVIALS);
                 if (j < lmin)
                 {
                     kmin = k;
