@@ -1,6 +1,6 @@
 ﻿namespace BallSort.Core;
 
-public struct MoveInfo
+public record struct MoveInfo
 {
     /// <summary>
     /// The source vial of a move.
