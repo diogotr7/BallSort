@@ -13,16 +13,6 @@ public sealed class Vial
 
     public VialTopInfo GetTopInfo()
     {
-        if (IsEmpty())
-        {
-            return new VialTopInfo
-            {
-                Color = 0,
-                EmptyCount = Balls.Length,
-                Count = 0
-            };
-        }
-
         //starting from top (0):
         //empty = how many slots before the first ball
         //color = color of the first ball
@@ -89,8 +79,5 @@ public sealed class Vial
         return res;
     }
     
-    public bool IsEmpty()
-    {
-        return Balls[^1] == 0;
-    }
+    public bool IsEmpty() => Balls[^1] == 0;
 }
