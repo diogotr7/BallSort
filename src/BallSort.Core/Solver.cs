@@ -13,9 +13,9 @@ public sealed class Solver
     public readonly Dictionary<uint, ulong> hashbits;
     public readonly List<Node>[,] state;
     public readonly uint[,,] hash;
-    public readonly VialsDef puzzle;
+    public readonly Puzzle puzzle;
 
-    public Solver(VialsDef def)
+    public Solver(Puzzle def)
     {
         puzzle = def;
         var settings = def.GetSettings();

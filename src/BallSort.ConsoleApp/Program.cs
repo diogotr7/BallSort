@@ -20,7 +20,7 @@ public static class Program
     {
         var settings = new GameSettings(8, 2, 4);
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
-        var puzzle = VialsDef.CreateRandom(settings);
+        var puzzle = Puzzle.CreateRandom(settings);
         PrintBoard(puzzle);
 
         var game = new Solver(puzzle);
@@ -50,9 +50,9 @@ public static class Program
         Console.WriteLine($"Took {solve.ElapsedMilliseconds}ms ");
     }
 
-    private static void PrintBoard(VialsDef recognized)
+    private static void PrintBoard(Puzzle recognized)
     {
-        for (var i = 0; i < recognized.Length; i++)
+        for (var i = 0; i < recognized.VialCount; i++)
         {
             for (var j = 0; j < recognized[i].Length; j++)
             {

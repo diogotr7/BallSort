@@ -10,7 +10,7 @@ namespace BallSort.OpenCv;
 /// </summary>
 public static class PuzzleRecognizer
 {
-    public static VialsDef RecognizePuzzle(string fileName)
+    public static Puzzle RecognizePuzzle(string fileName)
     {
         using var src = new Mat(fileName);
         var topPortion = src.Height / 4;
@@ -67,7 +67,7 @@ public static class PuzzleRecognizer
     ///     Used after the image has been preprocessed and analyzed.
     ///     This will turn rects, points and radii into vials and balls.
     /// </summary>
-    private static VialsDef Process(Mat cropped, IEnumerable<Rect> rectangles, IEnumerable<CircleSegment> circles)
+    private static Puzzle Process(Mat cropped, IEnumerable<Rect> rectangles, IEnumerable<CircleSegment> circles)
     {
         var balls = ProcessBalls(cropped, circles);
         var vials = ProcessVials(rectangles.OrderBy(r => r.Top).ThenBy(r => r.Left), balls);
@@ -76,7 +76,7 @@ public static class PuzzleRecognizer
         if (balls.Count % depth != 0)
             throw new Exception("unexpected number of balls, probably opencv failed to detect all balls");
 
-        var d = new VialsDef(vials.Count, depth);
+        var d = new Puzzle(vials.Count, depth);
         for (var i = 0; i < vials.Count; i++)
         {
             var ballsInRect = vials[i];

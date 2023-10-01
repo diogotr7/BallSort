@@ -15,7 +15,7 @@ public class Benchmarks
     {
         var settings = new GameSettings(VialCount, 2, 4);
         var seed = Seed;
-        var puzzle = VialsDef.CreateRandom(settings, seed);
+        var puzzle = Puzzle.CreateRandom(settings, seed);
         var game = new Solver(puzzle);
         game.solve_single();
     }

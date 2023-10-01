@@ -6,10 +6,10 @@ public sealed class Node
     public uint Hash;
     public MoveInfo MoveInfo;
 
-    public Node(VialsDef def, uint[,,] hash)
+    public Node(Puzzle def, uint[,,] hash)
     {
-        Vials = new Vial[def.Length];
-        for (byte i = 0; i < def.Length; i++)
+        Vials = new Vial[def.VialCount];
+        for (byte i = 0; i < def.VialCount; i++)
         {
             Vials[i] = new Vial(def[i], i);
         }

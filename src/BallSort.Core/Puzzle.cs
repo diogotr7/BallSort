@@ -1,10 +1,10 @@
 ﻿namespace BallSort.Core;
 
-public sealed class VialsDef
+public sealed class Puzzle
 {
     private readonly int[][] _vials;
     
-    public int Length => _vials.Length;
+    public int VialCount => _vials.Length;
 
     public GameSettings GetSettings()
     {
@@ -24,7 +24,7 @@ public sealed class VialsDef
     
     public int[] this[int i] => _vials[i];
 
-    public VialsDef(int vialCount, int vialDepth)
+    public Puzzle(int vialCount, int vialDepth)
     {
         _vials = new int[vialCount][];
         for (var i = 0; i < vialCount; i++)
@@ -33,10 +33,10 @@ public sealed class VialsDef
         }
     }
     
-    public static VialsDef Parse(string s)
+    public static Puzzle Parse(string s)
     {
         var lines = s.Split(Environment.NewLine);
-        var result = new VialsDef(lines.Length, lines[0].Length);
+        var result = new Puzzle(lines.Length, lines[0].Length);
         for (var i = 0; i < lines.Length; i++)
         {
             for (var j = 0; j < lines[i].Length; j++)
@@ -48,7 +48,19 @@ public sealed class VialsDef
         return result;
     }
     
-    public static VialsDef CreateRandom(GameSettings gameSettings, int? seed = null)
+    public void Dump(TextWriter writer)
+    {
+        for (var i = 0; i < VialCount; i++)
+        {
+            for (var j = 0; j < _vials[i].Length; j++)
+            {
+                writer.Write(_vials[i][j]);
+            }
+            writer.WriteLine();
+        }
+    }
+    
+    public static Puzzle CreateRandom(GameSettings gameSettings, int? seed = null)
     {
         var random = new Random(seed ?? Environment.TickCount);
         
@@ -57,7 +69,7 @@ public sealed class VialsDef
         var vialDepth = gameSettings.VialDepth;
         var totalVialCount = fullVialCount + emptyVialCount;
         
-        var vialDefinition = new VialsDef(totalVialCount, vialDepth);
+        var vialDefinition = new Puzzle(totalVialCount, vialDepth);
 
         //full vials
         for (var i = 0; i < fullVialCount; i++)
