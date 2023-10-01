@@ -149,12 +149,12 @@ public static class PuzzleRecognizer
 
 internal class BallInfo
 {
-    public BallInfo(CircleSegment circle, int indexOf)
+    public BallInfo(CircleSegment circle, byte indexOf)
     {
         Circle = circle;
         ColorIndex = indexOf;
     }
 
     public CircleSegment Circle { get; set; }
-    public int ColorIndex { get; set; }
+    public byte ColorIndex { get; set; }
 }

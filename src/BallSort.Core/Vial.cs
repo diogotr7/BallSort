@@ -2,10 +2,10 @@
 
 public sealed class Vial
 {
-    public readonly int[] Balls;
+    public readonly byte[] Balls;
     public readonly byte Position;
 
-    public Vial(IEnumerable<int> b, byte position)
+    public Vial(IEnumerable<byte> b, byte position)
     {
         Balls = b.ToArray();
         Position = position;

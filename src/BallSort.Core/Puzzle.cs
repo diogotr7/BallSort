@@ -2,7 +2,7 @@
 
 public sealed class Puzzle
 {
-    private readonly int[][] _vials;
+    private readonly byte[][] _vials;
 
     public int VialCount => _vials.Length;
 
@@ -16,20 +16,20 @@ public sealed class Puzzle
         );
     }
 
-    public int this[int i, int j]
+    public byte this[int i, int j]
     {
         get => _vials[i][j];
         set => _vials[i][j] = value;
     }
 
-    public int[] this[int i] => _vials[i];
+    public byte[] this[int i] => _vials[i];
 
     public Puzzle(int vialCount, int vialDepth)
     {
-        _vials = new int[vialCount][];
+        _vials = new byte[vialCount][];
         for (var i = 0; i < vialCount; i++)
         {
-            _vials[i] = new int[vialDepth];
+            _vials[i] = new byte[vialDepth];
         }
     }
 
@@ -73,14 +73,14 @@ public sealed class Puzzle
         };
     }
 
-    private static int GetInt(char c)
+    private static byte GetInt(char c)
     {
         //0123456789ABCDEF etc
         return c switch
         {
             '_' => 0,
-            < 'A' => c - '0',
-            _ => c - 'A' + 10,
+            < 'A' => (byte)(c - '0'),
+            _ => (byte)(c - 'A' + 10),
         };
     }
 
@@ -100,7 +100,7 @@ public sealed class Puzzle
         {
             for (var j = 0; j < vialDepth; j++)
             {
-                vialDefinition[i, j] = i + 1;
+                vialDefinition[i, j] = (byte)(i + 1);
             }
         }
 
