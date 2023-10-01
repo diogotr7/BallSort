@@ -90,9 +90,9 @@ public static class PuzzleRecognizer
         return d;
     }
 
-    private static IReadOnlyList<IReadOnlyList<(CircleSegment Circle, int ColorIndex)>> ProcessVials(IEnumerable<Rect> rectangles, IReadOnlyList<(CircleSegment Circle, int ColorIndex)> balls)
+    private static IReadOnlyList<IReadOnlyList<BallInfo>> ProcessVials(IEnumerable<Rect> rectangles, IReadOnlyList<BallInfo> balls)
     {
-        var vials = new List<ReadOnlyCollection<(CircleSegment Circle, int ColorIndex)>>();
+        var vials = new List<ReadOnlyCollection<BallInfo>>();
         foreach (var rectangle in rectangles)
         {
             var ballsInRect = balls.Where(b => rectangle.Contains(b.Circle.Center.ToPoint()))
@@ -106,10 +106,10 @@ public static class PuzzleRecognizer
         return vials.AsReadOnly();
     }
 
-    private static IReadOnlyList<(CircleSegment Circle, int ColorIndex)> ProcessBalls(Mat cropped, IEnumerable<CircleSegment> circles)
+    private static IReadOnlyList<BallInfo> ProcessBalls(Mat cropped, IEnumerable<CircleSegment> circles)
     {
         var knownColors = new List<Color>();
-        var balls2 = new List<(CircleSegment Circle, int ColorIndex)>();
+        var balls2 = new List<BallInfo>();
         
         foreach (var circle in circles)
         {
@@ -117,7 +117,7 @@ public static class PuzzleRecognizer
             if (!knownColors.Contains(color))
                 knownColors.Add(color);
 
-            balls2.Add((circle, knownColors.IndexOf(color) + 1));
+            balls2.Add(new(circle, (byte)(knownColors.IndexOf(color) + 1)));
         }
 
         return balls2.AsReadOnly();
@@ -145,4 +145,16 @@ public static class PuzzleRecognizer
             Cv2.Circle(cropped, (int)circle.Center.X, (int)circle.Center.Y, (int)circle.Radius, Scalar.LimeGreen, 4);
         }
     }
+}
+
+internal class BallInfo
+{
+    public BallInfo(CircleSegment circle, int indexOf)
+    {
+        Circle = circle;
+        ColorIndex = indexOf;
+    }
+
+    public CircleSegment Circle { get; set; }
+    public int ColorIndex { get; set; }
 }
