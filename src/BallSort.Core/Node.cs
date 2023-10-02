@@ -50,7 +50,7 @@ public sealed class Node
     }
 
     //99% confidence this is correct
-    public void writeHashbit(Dictionary<uint, ulong> hashbits)
+    public void writeHashbit(IDictionary<uint, ulong> hashbits)
     {
         var base_ = Hash / 64;
         var offset = Hash % 64;
@@ -62,7 +62,7 @@ public sealed class Node
     }
 
     //99% confidence this is correct
-    public bool isHashedQ(Dictionary<uint, ulong> hashbits)
+    public bool isHashedQ(IDictionary<uint, ulong> hashbits)
     {
         var b = Hash / 64;
         var offset = Hash % 64;
