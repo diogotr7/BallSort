@@ -150,9 +150,6 @@ public sealed class Solver
 
         var y = 0;
         var nblockV = nd.NodeBlocks() + nd.EmptyVials() - NEMPTYVIALS;
-        for (var i = 0; i <= nblockV - NCOLORS; i++)
-            state[i, y] = new List<Node>();
-
         state[0, 0].Add(nd);
         nd.writeHashbit(hashbits);
         var total = 1;
@@ -163,56 +160,42 @@ public sealed class Solver
         do
         {
             newnodes = 0;
-            for (var i = 0; i <= nblockV - NCOLORS; i++)
-                state[i, y + 1] = new List<Node>(); //prepare next column
-
             for (var x = 0; x <= nblockV - NCOLORS - 1; x++)
             {
-                var ndlist = state[x, y];
-                for (var i = 0; i <= ndlist.Count - 1; i++)
+                var nodeList = state[x, y];
+                for (var i = 0; i <= nodeList.Count - 1; i++)
                 {
-                    nd = ndlist[i];
+                    var node = nodeList[i];
                     for (var ks = 0; ks <= NVIALS - 1; ks++)
                     {
-                        var viS = nd.Vials[ks].GetTopInfo();
+                        var viS = node.Vials[ks].GetTopInfo();
                         if (viS.EmptyCount == NVOLUME)
-                        {
-                            //Console.WriteLine("empty vial");
                             continue; //source is empty vial
-                        }
 
                         for (var kd = 0; kd <= NVIALS - 1; kd++)
                         {
                             if (kd == ks)
-                            {
-                                //Console.WriteLine("same vial");
-                                continue;
-                            }
+                                continue;//same vial
 
-                            var viD = nd.Vials[kd].GetTopInfo();
+                            var viD = node.Vials[kd].GetTopInfo();
                             if (viD.EmptyCount == 0 || //dest vial full
                                 (viD.EmptyCount < NVOLUME && viS.Color != viD.Color) || //dest vial not empty and colors not equal 
                                 (viD.EmptyCount == NVOLUME && viS.EmptyCount == NVOLUME - 1)) //dest vial empty and source vial has only one block
-                            {
-                                //Console.WriteLine("invalid move");
-                                continue;
-                            }
+                                continue; //invalid move
 
                             var blockdecreaseQ = viS.Count == 1 && viS.EmptyCount != NVOLUME - 1;
-                            var ndnew = new Node(nd);
+                            var ndnew = new Node(node);
                             ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
                             ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
                             ndnew.Sort();
                             ndnew.Hash = ndnew.getHash(hash);
                             if (ndnew.isHashedQ(hashbits))
-                            {
-                                //Console.WriteLine("hash collision");
-                                continue;
-                            }
+                                continue;//hash collision
+                            
                             total++;
                             ndnew.writeHashbit(hashbits);
-                            ndnew.MoveInfo.Source = nd.Vials[ks].Position;
-                            ndnew.MoveInfo.Destination = nd.Vials[kd].Position;
+                            ndnew.MoveInfo.Source = node.Vials[ks].Position;
+                            ndnew.MoveInfo.Destination = node.Vials[kd].Position;
                             if (blockdecreaseQ)
                             {
                                 ndnew.MoveInfo.Merged = true;
