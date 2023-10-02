@@ -19,7 +19,7 @@ public sealed class Solver
     {
         puzzle = def;
         var settings = def.GetSettings();
-        
+
         NCOLORS = settings.FilledVialCount;
         NEMPTYVIALS = settings.EmptyVialCount;
         NVOLUME = settings.VialDepth;
@@ -27,7 +27,7 @@ public sealed class Solver
 
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
         const int N_NOTDECREASE = 1000;
-        state = new List<Node>[NCOLORS * (NVOLUME - 1) + 1,N_NOTDECREASE + 1];
+        state = new List<Node>[NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1];
         for (var i = 0; i <= NCOLORS * (NVOLUME - 1); i++)
         {
             for (var j = 0; j <= N_NOTDECREASE; j++)
@@ -35,7 +35,7 @@ public sealed class Solver
                 state[i, j] = new List<Node>();
             }
         }
-        
+
         hash = new uint[NCOLORS + 1, NVOLUME, NVIALS];
         for (var i = 0; i <= NCOLORS; i++)
         {
@@ -59,7 +59,7 @@ public sealed class Solver
 
         if (nblock == NCOLORS) //puzzle is almost solved
         {
-            moves1 =  state[0, 0][0].LastMoves(NCOLORS);
+            moves1 = state[0, 0][0].LastMoves(NCOLORS);
             return moves1.Length == 0;
         }
 
@@ -118,7 +118,7 @@ public sealed class Solver
 
                 ndcand.Sort();
                 if (!nd.Equals(ndcand)) continue;
-                
+
                 nd = ndlist[i];
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
@@ -269,23 +269,7 @@ public sealed class Solver
         }
 
         var solved = nearoptimalSolution_single(nblockV, y - 1, out var moves);
-        
+
         return new Solution(solved, total, moves);
     }
 }
-
-public class Solution
-{
-    public bool SolutionFound { get; }
-    public int Nodes { get;  }
-    public Move[] Moves { get; }
-    
-    public Solution(bool solutionFound, int nodes, Move[] moves)
-    {
-        SolutionFound = solutionFound;
-        Nodes = nodes;
-        Moves = moves;
-    }
-}
-
-public readonly record struct Move(int From, int To);
