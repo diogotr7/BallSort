@@ -13,7 +13,7 @@ public sealed class Solver
     public readonly List<Node>[,] state;
     public readonly Puzzle puzzle;
 
-    public Solver(Puzzle def)
+    public Solver(Puzzle def, int magicNumber = 1000)
     {
         puzzle = def;
         var settings = def.GetSettings();
@@ -24,7 +24,7 @@ public sealed class Solver
         NVIALS = NCOLORS + NEMPTYVIALS;
 
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
-        const int N_NOTDECREASE = 1000;
+        int N_NOTDECREASE = magicNumber;
         state = new List<Node>[NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1];
         for (var i = 0; i <= NCOLORS * (NVOLUME - 1); i++)
         {
