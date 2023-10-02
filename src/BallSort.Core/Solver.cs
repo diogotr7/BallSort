@@ -78,7 +78,6 @@ public sealed class Solver
         else
             y--;
 
-        var solLength = 1;
         while (x != 0 || y != 0)
         {
             var ndlist = state[x, y];
@@ -123,7 +122,6 @@ public sealed class Solver
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
                 moves.Add(new Move(src + 1, dst + 1));
-                solLength++;
                 if (nd.MoveInfo.Merged)
                 {
                     x--;
