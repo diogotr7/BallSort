@@ -30,7 +30,6 @@ public sealed class Node
         MoveInfo = node.MoveInfo;
     }
     
-    //99% confidence this is correct
     public void writeHashbit(IDictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
@@ -42,7 +41,6 @@ public sealed class Node
         hashbits[@base] = val | x;
     }
 
-    //99% confidence this is correct
     public bool isHashedQ(IDictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
