@@ -4,15 +4,13 @@ namespace BallSort.Core;
 
 public sealed class Solver
 {
-    private readonly Random random = new(0);
     public readonly int NCOLORS;
     public readonly int NEMPTYVIALS;
     public readonly int NVOLUME;
     public readonly int NVIALS;
 
-    public readonly Dictionary<uint, ulong> hashbits;
+    public readonly Dictionary<int, long> hashbits;
     public readonly List<Node>[,] state;
-    public readonly uint[,,] hash;
     public readonly Puzzle puzzle;
 
     public Solver(Puzzle def)
@@ -36,19 +34,7 @@ public sealed class Solver
             }
         }
 
-        hash = new uint[NCOLORS + 1, NVOLUME, NVIALS];
-        for (var i = 0; i <= NCOLORS; i++)
-        {
-            for (var j = 0; j <= NVOLUME - 1; j++)
-            {
-                for (var k = 0; k <= NVIALS - 1; k++)
-                {
-                    hash[i, j, k] = (uint)random.Next(int.MinValue, int.MaxValue);
-                }
-            }
-        }
-
-        hashbits = new Dictionary<uint, ulong>();
+        hashbits = new Dictionary<int, long>();
     }
 
     private bool nearoptimalSolution_single(int nblock, int y0, out Move[] moves1)
@@ -143,7 +129,7 @@ public sealed class Solver
 
     public Solution solve_single()
     {
-        var nd = new Node(puzzle, hash);
+        var nd = new Node(puzzle);
         nd.Sort();
 
         var y = 0;
@@ -186,7 +172,7 @@ public sealed class Solver
                             ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
                             ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
                             ndnew.Sort();
-                            ndnew.Hash = ndnew.getHash(hash);
+                            ndnew.Hash = ndnew.GetHashCode();
                             if (ndnew.isHashedQ(hashbits))
                                 continue;//hash collision
                             

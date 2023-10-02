@@ -3,10 +3,10 @@ namespace BallSort.Core;
 public sealed class Node
 {
     public readonly Vial[] Vials;
-    public uint Hash;
+    public int Hash;
     public MoveInfo MoveInfo;
 
-    public Node(Puzzle def, uint[,,] hash)
+    public Node(Puzzle def)
     {
         Vials = new Vial[def.VialCount];
         for (byte i = 0; i < def.VialCount; i++)
@@ -14,7 +14,7 @@ public sealed class Node
             Vials[i] = new Vial(def[i], i);
         }
 
-        Hash = getHash(hash);
+        Hash = GetHashCode();
         MoveInfo = new MoveInfo();
     }
 
@@ -29,64 +29,31 @@ public sealed class Node
         Hash = node.Hash;
         MoveInfo = node.MoveInfo;
     }
-
-    public uint getHash(uint[,,] h)
+    
+    //99% confidence this is correct
+    public void writeHashbit(IDictionary<int, long> hashbits)
     {
-        var vialLength = Vials.Length;
-        var ballLength = Vials[0].Balls.Length;
-        
-        var r = 0u;
-        for (var vialIndex = 0; vialIndex < vialLength; vialIndex++)
-        {
-            var v = Vials[vialIndex];
-            for (var ballIndex = 0; ballIndex < ballLength; ballIndex++)
-            {
-                var ball = (int)v.Balls[ballIndex];
-                r ^= h[ball, ballIndex, vialIndex];
-            }
-        }
+        var @base = Hash / 64;
+        var offset = Hash % 64;
+        var x = 1L << offset;
+        if (!hashbits.TryGetValue(@base, out var val))
+            hashbits.Add(@base, 0);
 
-        return r;
+        hashbits[@base] = val | x;
     }
 
     //99% confidence this is correct
-    public void writeHashbit(IDictionary<uint, ulong> hashbits)
+    public bool isHashedQ(IDictionary<int, long> hashbits)
     {
-        var base_ = Hash / 64;
+        var @base = Hash / 64;
         var offset = Hash % 64;
-        var x = 1ul << (int)offset;
-        if (!hashbits.TryGetValue(base_, out var val))
-            hashbits.Add(base_, 0);
-
-        hashbits[base_] = val | x;
-    }
-
-    //99% confidence this is correct
-    public bool isHashedQ(IDictionary<uint, ulong> hashbits)
-    {
-        var b = Hash / 64;
-        var offset = Hash % 64;
-        var x = 1ul << (int)offset;
-        if (!hashbits.TryGetValue(b, out var y))
-            hashbits.Add(b, 0);
+        var x = 1L << offset;
+        if (!hashbits.TryGetValue(@base, out var y))
+            hashbits.Add(@base, 0);
 
         return (y & x) != 0;
     }
-
-    /// <summary>
-    ///     
-    /// </summary>
-    /// <returns></returns>
-    public int NodeBlocks()
-    {
-        return Vials.Sum(t => t.VialBlocks());
-    }
-
-    /// <summary>
-    ///     Returns true if the node is equal to the current node.
-    /// </summary>
-    /// <param name="node"></param>
-    /// <returns></returns>
+    
     public bool Equals(Node node)
     {
         for (var vial = 0; vial < Vials.Length; vial++)
@@ -109,7 +76,7 @@ public sealed class Node
         for (var i = 1; i <= ncolors; i++)
         {
             var j = Vials.Length - 1;
-            while ((int)Vials[j].GetTopInfo().Color != i)
+            while (Vials[j].GetTopInfo().Color != i)
             {
                 j--;
             }
@@ -121,12 +88,11 @@ public sealed class Node
 
             for (var k = 0; k <= j - 1; k++)
             {
-                if ((int)Vials[k].GetTopInfo().Color == i)
+                if (Vials[k].GetTopInfo().Color != i) continue;
+                
+                for (var n = 0; n <= Vials[k].GetTopInfo().Count - 1; n++)
                 {
-                    for (var n = 0; n <= Vials[k].GetTopInfo().Count - 1; n++)
-                    {
-                        moves.Add(new Move(Vials[k].Position + 1, Vials[j].Position + 1));
-                    }
+                    moves.Add(new Move(Vials[k].Position + 1, Vials[j].Position + 1));
                 }
             }
         }
@@ -145,15 +111,10 @@ public sealed class Node
 
         return r;
     }
+    
+    public int NodeBlocks() => Vials.Sum(t => t.VialBlocks());
 
-    /// <summary>
-    ///     Returns the number of empty vials.
-    /// </summary>
-    /// <returns></returns>
-    public int EmptyVials()
-    {
-        return Vials.Count(vial => vial.IsEmpty());
-    }
+    public int EmptyVials() => Vials.Count(vial => vial.IsEmpty());
 
     public void Sort()
     {
@@ -171,5 +132,22 @@ public sealed class Node
         }
 
         return 0;
+    }
+    
+    public override int GetHashCode()
+    {
+        var vialCount = Vials.Length;
+        var vialDepth = Vials[0].Balls.Length;
+        
+        var hash = 0;
+        for (var vialIndex = 0; vialIndex < vialCount; vialIndex++)
+        {
+            for (var ballIndex = 0; ballIndex < vialDepth; ballIndex++)
+            {
+                hash = hash * 31 + Vials[vialIndex].Balls[ballIndex];
+            }
+        }
+
+        return hash;
     }
 }

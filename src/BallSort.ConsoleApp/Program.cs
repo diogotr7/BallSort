@@ -12,15 +12,15 @@ public static class Program
         var screenshots = Path.Combine(Environment.CurrentDirectory, "test-data");
         foreach (var file in Directory.EnumerateFiles(screenshots, "*.png"))
         {
-            TestOpenCv(file);
+            //TestOpenCv(file);
             //PrepareTestData(file);
         }
-        //TestSolve();
+        TestSolve();
     }
 
     private static void TestSolve()
     {
-        var settings = new GameSettings(8, 2, 4);
+        var settings = new GameSettings(16, 2, 4);
         //var newDef = VialsDef.Parse(File.ReadAllText("game.txt"));
         var puzzle = Puzzle.CreateRandom(settings);
         puzzle.Dump(Console.Out);

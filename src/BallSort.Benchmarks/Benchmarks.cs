@@ -4,30 +4,15 @@ using BenchmarkDotNet.Attributes;
 namespace BallSort.Benchmarks;
 
 [MemoryDiagnoser]
+[ShortRunJob]
 public class Benchmarks
 {
-    [ParamsSource(nameof(Seeds))] public int Seed { get; set; } = 0;
+    private readonly Puzzle _puzzle = Puzzle.CreateRandom(new GameSettings(8, 2, 4), 0);
     
-    [ParamsSource(nameof(VialCounts))] public int VialCount { get; set; } = 0;
-
     [Benchmark]
     public void Solve()
     {
-        var settings = new GameSettings(VialCount, 2, 4);
-        var seed = Seed;
-        var puzzle = Puzzle.CreateRandom(settings, seed);
-        var game = new Solver(puzzle);
+        var game = new Solver(_puzzle);
         game.solve_single();
-    }
-    
-    public static IEnumerable<int> Seeds()
-    {
-        yield return 0;
-        yield return 01;
-    }
-    
-    public static IEnumerable<int> VialCounts()
-    {
-        yield return 8;
     }
 }
