@@ -201,11 +201,7 @@ public sealed class Solver
                                 continue;
                             }
 
-                            bool blockdecreaseQ;
-                            if (viS.Count == 1 && viS.EmptyCount != NVOLUME - 1)
-                                blockdecreaseQ = true;
-                            else
-                                blockdecreaseQ = false;
+                            var blockdecreaseQ = viS.Count == 1 && viS.EmptyCount != NVOLUME - 1;
                             var ndnew = new Node(nd);
                             ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
                             ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
