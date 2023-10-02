@@ -168,9 +168,6 @@ public sealed class Solver
 
             for (var x = 0; x <= nblockV - NCOLORS - 1; x++)
             {
-                //if stop
-                //application.processmessages
-
                 var ndlist = state[x, y];
                 for (var i = 0; i <= ndlist.Count - 1; i++)
                 {
@@ -212,17 +209,8 @@ public sealed class Solver
                                 //Console.WriteLine("hash collision");
                                 continue;
                             }
-
-                            ndnew.writeHashbit(hashbits);
                             total++;
-                            const int N_MAXNODES = 100000000;
-                            if (total > N_MAXNODES)
-                            {
-                                //Form1.Memo1.Lines.Add('');
-                                //Form1.Memo1.Lines.Add(Format('Node limit %d exceeded!', [N_MAXNODES]));
-                                return new Solution(false, total, Array.Empty<Move>());
-                            }
-
+                            ndnew.writeHashbit(hashbits);
                             ndnew.MoveInfo.Source = nd.Vials[ks].Position;
                             ndnew.MoveInfo.Destination = nd.Vials[kd].Position;
                             if (blockdecreaseQ)
