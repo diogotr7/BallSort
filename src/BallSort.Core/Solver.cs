@@ -16,7 +16,7 @@ public sealed class Solver
     public Solver(Puzzle def, int magicNumber = 1000)
     {
         puzzle = def;
-        var settings = def.GetSettings();
+        var settings = def.Settings;
 
         NCOLORS = settings.FilledVialCount;
         NEMPTYVIALS = settings.EmptyVialCount;

@@ -6,15 +6,11 @@ public sealed class Puzzle
 
     public int VialCount => _vials.Length;
 
-    public GameSettings GetSettings()
-    {
-        return new GameSettings
-        (
-            _vials.Count(v => v.Any(b => b != 0)),
-            _vials.Count(v => v.All(b => b == 0)),
-            _vials[0].Length
-        );
-    }
+    public GameSettings Settings => new(
+        _vials.Count(v => v.Any(b => b != 0)),
+        _vials.Count(v => v.All(b => b == 0)),
+        _vials[0].Length
+    );
 
     public byte this[int i, int j]
     {

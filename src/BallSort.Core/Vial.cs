@@ -50,12 +50,7 @@ public sealed class Vial : IComparable<Vial>
             break;
         }
 
-        return new VialTopInfo
-        {
-            Color = previousBall,
-            EmptyCount = empty,
-            Count = count
-        };
+        return new VialTopInfo(previousBall, empty, count);
     }
 
     /// <summary>
