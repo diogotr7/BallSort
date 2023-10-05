@@ -26,9 +26,9 @@ public sealed class Solver
         //We allow N_NOTDECREASE moves which do not decrease total block number???????
         int N_NOTDECREASE = magicNumber;
         state = new List<Node>[NCOLORS * (NVOLUME - 1) + 1, N_NOTDECREASE + 1];
-        for (var i = 0; i <= NCOLORS * (NVOLUME - 1); i++)
+        for (var i = 0; i < state.GetLength(0); i++)
         {
-            for (var j = 0; j <= N_NOTDECREASE; j++)
+            for (var j = 0; j < state.GetLength(1); j++)
             {
                 state[i, j] = new List<Node>();
             }
@@ -58,7 +58,7 @@ public sealed class Solver
 
         var src = nd.MoveInfo.Source;
         var dst = nd.MoveInfo.Destination;
-        moves.Add(new Move(src + 1, dst + 1));
+        moves.Add(new Move(src, dst));
         if (nd.MoveInfo.Merged)
             x--;
         else
@@ -67,7 +67,7 @@ public sealed class Solver
         while (x != 0 || y != 0)
         {
             var ndlist = state[x, y];
-            for (var i = 0; i <= ndlist.Count - 1; i++)
+            for (var i = 0; i < ndlist.Count; i++)
             {
                 //keep
                 var ndcand = new Node(ndlist[i]);
@@ -107,7 +107,7 @@ public sealed class Solver
                 nd = ndlist[i];
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
-                moves.Add(new Move(src + 1, dst + 1));
+                moves.Add(new Move(src, dst));
                 if (nd.MoveInfo.Merged)
                 {
                     x--;
@@ -135,7 +135,7 @@ public sealed class Solver
         var y = 0;
         var nblockV = nd.NodeBlocks() + nd.EmptyVials() - NEMPTYVIALS;
         state[0, 0].Add(nd);
-        nd.writeHashbit(hashbits);
+        nd.WriteHashbit(hashbits);
         var total = 1;
 
         var solutionFound = false;
@@ -144,19 +144,19 @@ public sealed class Solver
         do
         {
             newnodes = 0;
-            for (var x = 0; x <= nblockV - NCOLORS - 1; x++)
+            for (var x = 0; x < nblockV - NCOLORS; x++)
             {
                 var nodeList = state[x, y];
-                for (var i = 0; i <= nodeList.Count - 1; i++)
+                for (var i = 0; i < nodeList.Count; i++)
                 {
                     var node = nodeList[i];
-                    for (var ks = 0; ks <= NVIALS - 1; ks++)
+                    for (var ks = 0; ks < NVIALS; ks++)
                     {
                         var viS = node.Vials[ks].GetTopInfo();
                         if (viS.EmptyCount == NVOLUME)
                             continue; //source is empty vial
 
-                        for (var kd = 0; kd <= NVIALS - 1; kd++)
+                        for (var kd = 0; kd < NVIALS; kd++)
                         {
                             if (kd == ks)
                                 continue;//same vial
@@ -173,11 +173,11 @@ public sealed class Solver
                             ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
                             ndnew.Sort();
                             ndnew.Hash = ndnew.GetHashCode();
-                            if (ndnew.isHashedQ(hashbits))
+                            if (ndnew.IsHashedQ(hashbits))
                                 continue;//hash collision
                             
                             total++;
-                            ndnew.writeHashbit(hashbits);
+                            ndnew.WriteHashbit(hashbits);
                             ndnew.MoveInfo.Source = node.Vials[ks].Position;
                             ndnew.MoveInfo.Destination = node.Vials[kd].Position;
                             if (blockdecreaseQ)
@@ -205,7 +205,7 @@ public sealed class Solver
         {
             var lmin = 99999;
             var kmin = 0;
-            for (var k = 0; k <= state[nblockV - NCOLORS, y - 1].Count - 1; k++)
+            for (var k = 0; k < state[nblockV - NCOLORS, y - 1].Count; k++)
             {
                 var j = state[nblockV - NCOLORS, y - 1][k].NLastMoves(NEMPTYVIALS);
                 if (j < lmin)

@@ -30,7 +30,7 @@ public sealed class Node
         MoveInfo = node.MoveInfo;
     }
     
-    public void writeHashbit(IDictionary<int, long> hashbits)
+    public void WriteHashbit(IDictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
         var offset = Hash % 64;
@@ -41,7 +41,7 @@ public sealed class Node
         hashbits[@base] = val | x;
     }
 
-    public bool isHashedQ(IDictionary<int, long> hashbits)
+    public bool IsHashedQ(IDictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
         var offset = Hash % 64;
@@ -71,10 +71,10 @@ public sealed class Node
     public Move[] LastMoves(int ncolors)
     {
         List<Move> moves = new();
-        for (var i = 1; i <= ncolors; i++)
+        for (var color = 1; color <= ncolors; color++)
         {
             var j = Vials.Length - 1;
-            while (Vials[j].GetTopInfo().Color != i)
+            while (Vials[j].GetTopInfo().Color != color)
             {
                 j--;
             }
@@ -84,13 +84,15 @@ public sealed class Node
                 continue; //vial with this color is full
             }
 
-            for (var k = 0; k <= j - 1; k++)
+            for (var k = 0; k < j; k++)
             {
-                if (Vials[k].GetTopInfo().Color != i) continue;
-                
-                for (var n = 0; n <= Vials[k].GetTopInfo().Count - 1; n++)
+                var topInfo = Vials[k].GetTopInfo();
+                if (topInfo.Color == color)
                 {
-                    moves.Add(new Move(Vials[k].Position + 1, Vials[j].Position + 1));
+                    for (var n = 0; n < topInfo.Count; n++)
+                    {
+                        moves.Add(new Move(Vials[k].Position, Vials[j].Position));
+                    }
                 }
             }
         }
@@ -114,24 +116,8 @@ public sealed class Node
 
     public int EmptyVials() => Vials.Count(vial => vial.IsEmpty());
 
-    public void Sort()
-    {
-        Array.Sort(Vials, Compare);
-    }
-    
-    private static int Compare(Vial v1, Vial v2)
-    {
-        for (var i = 0; i < v1.Balls.Length; i++)
-        {
-            if (v1.Balls[i] < v2.Balls[i])
-                return -1;
-            if (v1.Balls[i] > v2.Balls[i])
-                return 1;
-        }
+    public void Sort() => Array.Sort(Vials);
 
-        return 0;
-    }
-    
     public override int GetHashCode()
     {
         var vialCount = Vials.Length;

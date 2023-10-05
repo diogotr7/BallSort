@@ -73,9 +73,10 @@ public static class Program
     {
         Console.WriteLine($"Solution: {solution.SolutionFound}");
         Console.WriteLine($"Nodes: {solution.Nodes}");
+        
         foreach (var move in solution.Moves)
         {
-            Console.WriteLine($"{move.From} -> {move.To}");
+            Console.WriteLine($"{move.From + 1} -> {move.To + 1}");
         }
         
         Console.WriteLine($"Solved puzzle  with {solution.Moves.Length} moves");

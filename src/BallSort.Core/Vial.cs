@@ -1,6 +1,8 @@
-﻿namespace BallSort.Core;
+﻿using System.Text;
 
-public sealed class Vial
+namespace BallSort.Core;
+
+public sealed class Vial : IComparable<Vial>
 {
     public readonly byte[] Balls;
     public readonly byte Position;
@@ -80,4 +82,32 @@ public sealed class Vial
     }
     
     public bool IsEmpty() => Balls[^1] == 0;
+
+    public int CompareTo(Vial? other)
+    {
+        if (other == null)
+            throw new ArgumentNullException(nameof(other));
+        
+        for (var i = 0; i < Balls.Length; i++)
+        {
+            if (Balls[i] < other.Balls[i])
+                return -1;
+            if (Balls[i] > other.Balls[i])
+                return 1;
+        }
+
+        return 0;
+    }
+
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        
+        foreach (var ball in Balls)
+        {
+            sb.Append(Utilities.RenderBall(ball));
+        }
+
+        return sb.ToString();
+    }
 }

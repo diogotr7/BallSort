@@ -41,7 +41,7 @@ public sealed class Puzzle
         {
             for (var j = 0; j < lines[i].Length; j++)
             {
-                result[i, j] = GetInt(lines[i][j]);
+                result[i, j] = Utilities.ParseBall(lines[i][j]);
             }
         }
 
@@ -54,34 +54,12 @@ public sealed class Puzzle
         {
             for (var j = 0; j < this[i].Length; j++)
             {
-                writer.Write(GetChar(this[i][j]));
+                writer.Write(Utilities.RenderBall(this[i][j]));
             }
 
             if (i != VialCount - 1)
                 writer.WriteLine();
         }
-    }
-
-    private static char GetChar(int n)
-    {
-        //0123456789ABCDEF etc
-        return n switch
-        {
-            0 => '_',
-            < 10 => (char)(n + '0'),
-            _ => (char)(n - 10 + 'A'),
-        };
-    }
-
-    private static byte GetInt(char c)
-    {
-        //0123456789ABCDEF etc
-        return c switch
-        {
-            '_' => 0,
-            < 'A' => (byte)(c - '0'),
-            _ => (byte)(c - 'A' + 10),
-        };
     }
 
     public static Puzzle CreateRandom(GameSettings gameSettings, int? seed = null)
