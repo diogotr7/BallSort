@@ -175,19 +175,17 @@ public sealed class Solver
                             ndnew.Hash = ndnew.GetHashCode();
                             if (ndnew.IsHashedQ(hashbits))
                                 continue;//hash collision
-                            
+
                             total++;
                             ndnew.WriteHashbit(hashbits);
-                            ndnew.MoveInfo.Source = node.Vials[ks].Position;
-                            ndnew.MoveInfo.Destination = node.Vials[kd].Position;
                             if (blockdecreaseQ)
                             {
-                                ndnew.MoveInfo.Merged = true;
+                                ndnew.MoveInfo = new MoveInfo(node.Vials[ks].Position, node.Vials[kd].Position, true);
                                 state[x + 1, y].Add(ndnew);
                             }
                             else
                             {
-                                ndnew.MoveInfo.Merged = false;
+                                ndnew.MoveInfo = new MoveInfo(node.Vials[ks].Position, node.Vials[kd].Position, false);
                                 state[x, y + 1].Add(ndnew);
                                 newnodes++;
                             }
