@@ -30,7 +30,7 @@ public sealed class Solver
         {
             for (var j = 0; j < state.GetLength(1); j++)
             {
-                state[i, j] = new List<Node>();
+                state[i, j] = new();
             }
         }
 
@@ -70,7 +70,7 @@ public sealed class Solver
             for (var i = 0; i < ndlist.Count; i++)
             {
                 //keep
-                var ndcand = new Node(ndlist[i]);
+                var ndcand = ndlist[i].Clone();
 
                 var ks = 0;
                 while (ndcand.Vials[ks].Position != src)
@@ -168,7 +168,7 @@ public sealed class Solver
                                 continue; //invalid move
 
                             var blockdecreaseQ = viS.Count == 1 && viS.EmptyCount != NVOLUME - 1;
-                            var ndnew = new Node(node);
+                            var ndnew = node.Clone();
                             ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
                             ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
                             ndnew.Sort();
