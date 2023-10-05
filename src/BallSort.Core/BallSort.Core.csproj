@@ -4,4 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="UnmanagedArray.Generators" Version="1.2.0" />
+    </ItemGroup>
 </Project>

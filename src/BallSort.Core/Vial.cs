@@ -1,15 +1,20 @@
-﻿using System.Text;
+using System.Text;
+using UnmanagedArrayGenerator;
 
 namespace BallSort.Core;
 
-public sealed class Vial : IComparable<Vial>
+public struct Vial : IComparable<Vial>
 {
-    public readonly byte[] Balls;
+    private FourBalls _balls;
+    public Span<byte> Balls => _balls.AsSpan();
     public readonly byte Position;
 
-    public Vial(IEnumerable<byte> b, byte position)
+    public Vial(Span<byte> b, byte position)
     {
-        Balls = b.ToArray();
+        if (b.Length > 4)
+            throw new ArgumentException("Vial can only hold 4 balls.");
+        
+        b.CopyTo(Balls);
         Position = position;
     }
 
@@ -78,11 +83,8 @@ public sealed class Vial : IComparable<Vial>
     
     public bool IsEmpty() => Balls[^1] == 0;
 
-    public int CompareTo(Vial? other)
+    public int CompareTo(Vial other)
     {
-        if (other == null)
-            throw new ArgumentNullException(nameof(other));
-        
         for (var i = 0; i < Balls.Length; i++)
         {
             if (Balls[i] < other.Balls[i])
@@ -97,7 +99,7 @@ public sealed class Vial : IComparable<Vial>
     public override string ToString()
     {
         var sb = new StringBuilder();
-        
+
         foreach (var ball in Balls)
         {
             sb.Append(Utilities.RenderBall(ball));
@@ -106,3 +108,7 @@ public sealed class Vial : IComparable<Vial>
         return sb.ToString();
     }
 }
+
+
+[UnmanagedArray(typeof(byte), 4)]
+public partial struct FourBalls { }
