@@ -1,21 +1,25 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
-using UnmanagedArrayGenerator;
 
 namespace BallSort.Core;
 
 public struct Vial : IComparable<Vial>
 {
-    private FourBalls _balls;
-    public Span<byte> Balls => _balls.AsSpan();
     public readonly byte Position;
-
+    public readonly byte VialDepth;
+    
+    private VialInternal _balls;
+    public Span<byte> Balls => _balls.AsSpan(VialDepth);
+    
     public Vial(Span<byte> b, byte position)
     {
         if (b.Length > 4)
             throw new ArgumentException("Vial can only hold 4 balls.");
         
-        b.CopyTo(Balls);
+        VialDepth = (byte) b.Length;
         Position = position;
+        b.CopyTo(Balls);
     }
 
     public VialTopInfo GetTopInfo()
@@ -111,6 +115,12 @@ public struct Vial : IComparable<Vial>
     }
 }
 
-
-[UnmanagedArray(typeof(byte), 4)]
-public partial struct FourBalls { }
+public record struct VialInternal
+{
+    public byte Child0;
+    public byte Child1;
+    public byte Child2;
+    public byte Child3;
+    
+    public Span<byte> AsSpan(int length) => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(Child0), length);
+}

@@ -1,14 +1,21 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using NoAlloq;
+
 namespace BallSort.Core;
 
-public sealed class Node
+public struct Node
 {
-    public readonly Vial[] Vials;
+    private VialCollection _vialCollection;
+    public Span<Vial> Vials => _vialCollection.AsSpan(VialCount); 
     public readonly int Hash;
     public readonly MoveInfo MoveInfo;
+    public readonly int VialCount;
 
     public Node(Puzzle def)
     {
-        Vials = new Vial[def.VialCount];
+        _vialCollection = new VialCollection();
+        VialCount = def.VialCount;
         for (byte i = 0; i < def.VialCount; i++)
         {
             Vials[i] = new Vial(def[i], i);
@@ -25,21 +32,22 @@ public sealed class Node
         int destEmptyCount,
         bool something)
     {
-        var vials = new Vial[Vials.Length];
-        Vials.CopyTo(vials, 0);
+        var copyStruct = _vialCollection;
+        var vials = copyStruct.AsSpan(VialCount);
         
         var temp = vials[sourceVialIndex].Balls[srcEmptyCount];
         vials[destVialIndex].Balls[destEmptyCount - 1] = temp;
         vials[sourceVialIndex].Balls[srcEmptyCount] = 0;
         
-        Array.Sort(vials);
+        vials.Sort();
         var moveInfo = new MoveInfo(Vials[sourceVialIndex].Position, Vials[destVialIndex].Position, something);
-        return new Node(vials, moveInfo);
+        return new Node(in vials, moveInfo);
     }
     
-    private Node(Vial[] vials, MoveInfo moveInfo)
+    private Node(in Span<Vial> vials, MoveInfo moveInfo)
     {
-        Vials = vials;
+        VialCount = vials.Length;
+        vials.CopyTo(Vials);
         MoveInfo = moveInfo;
         Hash = GetHashCode();
     }
@@ -116,7 +124,7 @@ public sealed class Node
 
     public int EmptyVials() => Vials.Count(vial => vial.IsEmpty());
 
-    public void Sort() => Array.Sort(Vials);
+    public void Sort() => Vials.Sort();
 
     public override int GetHashCode()
     {
@@ -134,4 +142,26 @@ public sealed class Node
 
         return hash;
     }
+}
+
+public record struct VialCollection
+{
+    public Vial Child00;
+    public Vial Child01;
+    public Vial Child02;
+    public Vial Child03;
+    public Vial Child04;
+    public Vial Child05;
+    public Vial Child06;
+    public Vial Child07;
+    public Vial Child08;
+    public Vial Child09;
+    public Vial Child10;
+    public Vial Child11;
+    public Vial Child12;
+    public Vial Child13;
+    public Vial Child14;
+    public Vial Child15;
+    
+    public Span<Vial> AsSpan(int length) => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(Child00), length);
 }
