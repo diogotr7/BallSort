@@ -18,6 +18,8 @@ public sealed class Node
         MoveInfo = new MoveInfo();
     }
 
+    public Node Clone() => new(this);
+
     private Node(Node node)
     {
         Vials = new Vial[node.Vials.Length];
@@ -117,8 +119,6 @@ public sealed class Node
     public int EmptyVials() => Vials.Count(vial => vial.IsEmpty());
 
     public void Sort() => Array.Sort(Vials);
-    
-    public Node Clone() => new(this);
 
     public override int GetHashCode()
     {
