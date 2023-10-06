@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using BallSort.Core;
 using OpenCvSharp;
 
@@ -49,16 +48,14 @@ public static class PuzzleRecognizer
             maxRadius: 40
         );
         
-        #if TRACE
-        Cv2.ImWrite("gray.png", gray);
-        Cv2.ImWrite("canny.png", canny);
-        
-        using var debug = cropped;
-        DrawCircles(circles, debug);
-        DrawRectangles(rectangles, debug);
-        
-        Cv2.ImWrite("debug.png", debug);
-        #endif
+        // Cv2.ImWrite("gray.png", gray);
+        // Cv2.ImWrite("canny.png", canny);
+        //
+        // using var debug = cropped;
+        // DrawCircles(circles, debug);
+        // DrawRectangles(rectangles, debug);
+        //
+        // Cv2.ImWrite("debug.png", debug);
         
         return Process(cropped, rectangles, circles);
     }

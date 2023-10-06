@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using BallSort.Core;
 using BallSort.OpenCv;
 
@@ -11,7 +12,7 @@ public static class Solve
         webApp.MapPost("/solve", HandleAsync);
     }
 
-    private static async Task<IResult> HandleAsync(HttpRequest req)
+    private static async Task<IResult> HandleAsync(HttpRequest req, ILogger<int> logger)
     {
         var files = req.Form.Files;
         var sc = files.FirstOrDefault(x => x.FileName.EndsWith("png"));
@@ -28,10 +29,15 @@ public static class Solve
     
         //recognize puzzle
 
+        var sw = Stopwatch.StartNew();
         var puzzle = PuzzleRecognizer.RecognizePuzzle(tempFile);
+        var recognizerTime = sw.ElapsedMilliseconds;
         var solver = new Solver(puzzle);
         var solution = solver.solve_single();
-
+        var solveTime = sw.ElapsedMilliseconds - recognizerTime;
+        sw.Stop();
+        logger.LogInformation($"Recognized puzzle in {recognizerTime}ms, solved in {solveTime}ms");
+        
         return GetHtmlForSolution(solution);
     }
 
@@ -46,7 +52,7 @@ public static class Solve
         html.AppendLine("<tr><th>From</th><th>To</th></tr>");
         foreach (var (from, to) in solution.Moves)
         {
-            html.AppendLine($"<tr><td>{from}</td><td>{to}</td></tr>");
+            html.AppendLine($"<tr><td>{from + 1}</td><td>{to + 1}</td></tr>");
         }
     
         html.AppendLine("</table>");

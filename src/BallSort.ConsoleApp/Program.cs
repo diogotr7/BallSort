@@ -9,7 +9,8 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        TestSolve();
+        TestOpenCv();
+        // TestSolve();
         // TestLimits();
     }
 
@@ -54,7 +55,6 @@ public static class Program
             timer.Stop();
             PrintResult(solution);
             Console.WriteLine($"Took {timer.ElapsedMilliseconds}ms ");
-            
         }
     }
     
