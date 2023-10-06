@@ -1,3 +1,3 @@
 ﻿namespace BallSort.Core;
 
-public readonly record struct Move(int From, int To);
+public readonly record struct Move(byte From, byte To);
