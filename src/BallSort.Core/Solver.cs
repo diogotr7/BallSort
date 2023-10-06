@@ -66,56 +66,55 @@ public sealed class Solver
 
         while (x != 0 || y != 0)
         {
-            var ndlist = state[x, y];
-            for (var i = 0; i < ndlist.Count; i++)
+            var nodes = state[x, y];
+            for (var i = 0; i < nodes.Count; i++)
             {
-                //keep
-                var ndcand = ndlist[i].Clone();
-
-                var ks = 0;
-                while (ndcand.Vials[ks].Position != src)
+                var testNode = nodes[i];
+                
+                var sourceIndex = 0;
+                while (testNode.Vials[sourceIndex].Position != src)
                 {
-                    ks++;
+                    sourceIndex++;
                 }
 
-                var kd = 0;
-                while (ndcand.Vials[kd].Position != dst)
+                var destIndex = 0;
+                while (testNode.Vials[destIndex].Position != dst)
                 {
-                    kd++;
+                    destIndex++;
                 }
 
-                var viS = ndcand.Vials[ks].GetTopInfo();
-                var viD = ndcand.Vials[kd].GetTopInfo();
-                if (viS.EmptyCount == NVOLUME)
+                var sourceVial = testNode.Vials[sourceIndex].GetTopInfo();
+                var destVial = testNode.Vials[destIndex].GetTopInfo();
+                if (sourceVial.EmptyCount == NVOLUME)
                 {
                     continue; //source is empty vial
                 }
 
-                if (viD.EmptyCount == 0 ||
-                    (viD.EmptyCount < NVOLUME && viS.Color != viD.Color) ||
-                    (viD.EmptyCount == NVOLUME && viS.EmptyCount == NVOLUME - 1))
+                if (destVial.EmptyCount == 0 ||
+                    (destVial.EmptyCount < NVOLUME && sourceVial.Color != destVial.Color) ||
+                    (destVial.EmptyCount == NVOLUME && sourceVial.EmptyCount == NVOLUME - 1))
                 {
                     continue;
                 }
 
-                ndcand.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
-                ndcand.Vials[ks].Balls[viS.EmptyCount] = 0;
+                var newNode = testNode.Clone();
 
-                ndcand.Sort();
-                if (!nd.Equals(ndcand)) continue;
+                //move the ball
+                newNode.Vials[destIndex].Balls[destVial.EmptyCount - 1] = sourceVial.Color;
+                newNode.Vials[sourceIndex].Balls[sourceVial.EmptyCount] = 0;
 
-                nd = ndlist[i];
+                newNode.Sort();
+                if (!nd.Equals(newNode)) 
+                    continue;
+
+                nd = testNode;
                 src = nd.MoveInfo.Source;
                 dst = nd.MoveInfo.Destination;
                 moves.Add(new Move(src, dst));
                 if (nd.MoveInfo.Merged)
-                {
                     x--;
-                }
                 else
-                {
                     y--;
-                }
 
                 break;
             }
@@ -159,7 +158,7 @@ public sealed class Solver
                         for (var kd = 0; kd < NVIALS; kd++)
                         {
                             if (kd == ks)
-                                continue;//same vial
+                                continue; //same vial
 
                             var viD = node.Vials[kd].GetTopInfo();
                             if (viD.EmptyCount == 0 || //dest vial full
@@ -174,7 +173,7 @@ public sealed class Solver
                             ndnew.Sort();
                             ndnew.Hash = ndnew.GetHashCode();
                             if (ndnew.IsHashedQ(hashbits))
-                                continue;//hash collision
+                                continue; //hash collision
 
                             total++;
                             ndnew.WriteHashbit(hashbits);

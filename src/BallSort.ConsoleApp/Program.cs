@@ -10,6 +10,30 @@ public static class Program
     public static void Main(string[] args)
     {
         TestSolve();
+        // TestLimits();
+    }
+
+    private static void TestLimits()
+    {
+        for (var i = 12; i < 100; i++)
+        {
+            Solution? solution = null;
+            int seed = 0;
+            do
+            {
+                var puzzle = Puzzle.CreateRandom(new GameSettings(i, 3, 4), seed);
+                var solver = new Solver(puzzle);
+                var time = Stopwatch.StartNew();
+                solution = solver.solve_single();
+                if (!solution.SolutionFound)
+                {
+                    Console.WriteLine($"No solution found for puzzle with {i} vials in {time.ElapsedMilliseconds}ms, changing seed");
+                    seed++;
+                    continue;
+                }
+                Console.WriteLine($"Solved puzzle with {i} vials in {time.ElapsedMilliseconds}ms");
+            } while (solution?.SolutionFound != true);
+        }
     }
     
     private static void TestSolve()
