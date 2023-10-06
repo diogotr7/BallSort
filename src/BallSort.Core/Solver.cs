@@ -97,13 +97,13 @@ public sealed class Solver
                     continue;
                 }
 
-                var newNode = testNode.Clone();
-
-                //move the ball
-                newNode.Vials[destIndex].Balls[destVial.EmptyCount - 1] = sourceVial.Color;
-                newNode.Vials[sourceIndex].Balls[sourceVial.EmptyCount] = 0;
-
-                newNode.Sort();
+                var newNode = testNode.PerformMove(
+                    sourceIndex,
+                    destIndex,
+                    sourceVial.EmptyCount,
+                    destVial.EmptyCount,
+                    false);
+                
                 if (!nd.Equals(newNode)) 
                     continue;
 
@@ -149,43 +149,51 @@ public sealed class Solver
                 for (var i = 0; i < nodeList.Count; i++)
                 {
                     var node = nodeList[i];
-                    for (var ks = 0; ks < NVIALS; ks++)
+                    for (var sourceVialIndex = 0; sourceVialIndex < NVIALS; sourceVialIndex++)
                     {
-                        var viS = node.Vials[ks].GetTopInfo();
-                        if (viS.EmptyCount == NVOLUME)
-                            continue; //source is empty vial
+                        if (node.Vials[sourceVialIndex].IsEmpty())
+                            continue;
+                        
+                        var sourceVialTopInfo = node.Vials[sourceVialIndex].GetTopInfo();
 
-                        for (var kd = 0; kd < NVIALS; kd++)
+                        for (var destVialIndex = 0; destVialIndex < NVIALS; destVialIndex++)
                         {
-                            if (kd == ks)
-                                continue; //same vial
+                            if (destVialIndex == sourceVialIndex)
+                                continue;
+                            
+                            var destVial = node.Vials[destVialIndex];
+                            
+                            if (destVial.IsFull())
+                                continue;
+                            
+                            if (destVial.IsEmpty() && sourceVialTopInfo.EmptyCount == NVOLUME - 1) //dest vial empty and source vial has only one block
+                                continue;
+                            
+                            var destVialTopInfo = destVial.GetTopInfo();
+                            if (!destVial.IsEmpty() && destVialTopInfo.Color != sourceVialTopInfo.Color) //dest vial not empty and colors not equall
+                                continue;
 
-                            var viD = node.Vials[kd].GetTopInfo();
-                            if (viD.EmptyCount == 0 || //dest vial full
-                                (viD.EmptyCount < NVOLUME && viS.Color != viD.Color) || //dest vial not empty and colors not equal 
-                                (viD.EmptyCount == NVOLUME && viS.EmptyCount == NVOLUME - 1)) //dest vial empty and source vial has only one block
-                                continue; //invalid move
+                            //if dest vial is empty and source vial has only one block, then we can't decrease number of blocks
+                            var blockdecreaseQ = sourceVialTopInfo.Count == 1 && sourceVialTopInfo.EmptyCount != NVOLUME - 1;
+                            var newNode = node.PerformMove(
+                                sourceVialIndex,
+                                destVialIndex,
+                                sourceVialTopInfo.EmptyCount,
+                                destVialTopInfo.EmptyCount,
+                                blockdecreaseQ);
 
-                            var blockdecreaseQ = viS.Count == 1 && viS.EmptyCount != NVOLUME - 1;
-                            var ndnew = node.Clone();
-                            ndnew.Vials[kd].Balls[viD.EmptyCount - 1] = viS.Color;
-                            ndnew.Vials[ks].Balls[viS.EmptyCount] = 0;
-                            ndnew.Sort();
-                            ndnew.Hash = ndnew.GetHashCode();
-                            if (ndnew.IsHashedQ(hashbits))
+                            if (newNode.IsHashedQ(hashbits))
                                 continue; //hash collision
 
                             total++;
-                            ndnew.WriteHashbit(hashbits);
+                            newNode.WriteHashbit(hashbits);
                             if (blockdecreaseQ)
                             {
-                                ndnew.MoveInfo = new MoveInfo(node.Vials[ks].Position, node.Vials[kd].Position, true);
-                                state[x + 1, y].Add(ndnew);
+                                state[x + 1, y].Add(newNode);
                             }
                             else
                             {
-                                ndnew.MoveInfo = new MoveInfo(node.Vials[ks].Position, node.Vials[kd].Position, false);
-                                state[x, y + 1].Add(ndnew);
+                                state[x, y + 1].Add(newNode);
                                 newnodes++;
                             }
                         }

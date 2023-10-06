@@ -3,8 +3,8 @@ namespace BallSort.Core;
 public sealed class Node
 {
     public readonly Vial[] Vials;
-    public int Hash;
-    public MoveInfo MoveInfo;
+    public readonly int Hash;
+    public readonly MoveInfo MoveInfo;
 
     public Node(Puzzle def)
     {
@@ -18,21 +18,33 @@ public sealed class Node
         MoveInfo = new MoveInfo();
     }
 
-    public Node Clone() => new(this);
-
-    private Node(Node node)
+    public Node PerformMove(
+        int sourceVialIndex,
+        int destVialIndex,
+        int srcEmptyCount,
+        int destEmptyCount,
+        bool something)
     {
-        Vials = new Vial[node.Vials.Length];
-        for (var i = 0; i < Vials.Length; i++)
-        {
-            Vials[i] = new Vial(node.Vials[i].Balls, node.Vials[i].Position);
-        }
-
-        Hash = node.Hash;
-        MoveInfo = node.MoveInfo;
+        var vials = new Vial[Vials.Length];
+        Vials.CopyTo(vials, 0);
+        
+        var temp = vials[sourceVialIndex].Balls[srcEmptyCount];
+        vials[destVialIndex].Balls[destEmptyCount - 1] = temp;
+        vials[sourceVialIndex].Balls[srcEmptyCount] = 0;
+        
+        Array.Sort(vials);
+        var moveInfo = new MoveInfo(Vials[sourceVialIndex].Position, Vials[destVialIndex].Position, something);
+        return new Node(vials, moveInfo);
     }
     
-    public void WriteHashbit(IDictionary<int, long> hashbits)
+    private Node(Vial[] vials, MoveInfo moveInfo)
+    {
+        Vials = vials;
+        MoveInfo = moveInfo;
+        Hash = GetHashCode();
+    }
+    
+    public void WriteHashbit(Dictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
         var offset = Hash % 64;
@@ -43,7 +55,7 @@ public sealed class Node
         hashbits[@base] = val | x;
     }
 
-    public bool IsHashedQ(IDictionary<int, long> hashbits)
+    public bool IsHashedQ(Dictionary<int, long> hashbits)
     {
         var @base = Hash / 64;
         var offset = Hash % 64;
@@ -52,22 +64,6 @@ public sealed class Node
             hashbits.Add(@base, 0);
 
         return (y & x) != 0;
-    }
-    
-    public bool Equals(Node node)
-    {
-        for (var vial = 0; vial < Vials.Length; vial++)
-        {
-            for (var ball = 0; ball < Vials[vial].Balls.Length; ball++)
-            {
-                if (Vials[vial].Balls[ball] != node.Vials[vial].Balls[ball])
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 
     public Move[] LastMoves(int ncolors)
@@ -113,6 +109,8 @@ public sealed class Node
 
         return r;
     }
+    
+    public bool Equals(Node node) => Vials.SequenceEqual(node.Vials);
     
     public int NodeBlocks() => Vials.Sum(t => t.VialBlocks());
 

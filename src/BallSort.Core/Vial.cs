@@ -83,6 +83,8 @@ public struct Vial : IComparable<Vial>
     
     public bool IsEmpty() => Balls[^1] == 0;
 
+    public bool IsFull() => Balls[0] != 0;
+
     public int CompareTo(Vial other)
     {
         for (var i = 0; i < Balls.Length; i++)
