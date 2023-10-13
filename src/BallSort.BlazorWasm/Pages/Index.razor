@@ -1,3 +1,71 @@
 ﻿@page "/"
+@using BallSort.BlazorWasm.Services
+@using KristofferStrube.Blazor.FileSystemAccess;
+@using OpenCvSharp
+@using SpawnDev.BlazorJS.JSObjects
+@using System.Runtime.InteropServices
+@inject PuzzleSolverService PuzzleSolverService;
+@inject IFileSystemAccessService FileSystemAccessService;
+@inject ILogger<Index> Logger;
 
-<h1>Hello, world!</h1>
+<button @onclick="OpenAndReadFile">Open File Picker for Single File and Read</button>
+<br/>
+@code {
+    private async Task OpenAndReadFile()
+    {
+        OpenFilePickerOptionsStartInWellKnownDirectory options = new()
+        {
+            Multiple = false,
+            Types = new[]
+            {
+                new FilePickerAcceptType
+                {
+                    Description = "Screenshots Files",
+                    Accept = new() { ["image/png"] = new[] { ".png" } }
+                }
+            }
+        };
+        try
+        {
+            Console.WriteLine("Open File Picker");
+            var fileHandles = await FileSystemAccessService.ShowOpenFilePickerAsync(options);
+            var fileHandle = fileHandles.Single();
+            var file = await fileHandle.GetFileAsync();
+            var bytes = await file.ArrayBufferAsync();
+            
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine($"Byte {i} {bytes[i]}");
+            }
+            
+            var mat = Mat.ImDecode(bytes);
+            Console.WriteLine($"Byte Length {bytes.Length}");
+            // var mat = Mat.FromImageData(bytes);
+            Console.WriteLine($"Mat {mat}");
+            var result = PuzzleSolverService.DetectAndSolve(mat);
+            Console.WriteLine($"Result {result}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    //https://github.com/shimat/opencvsharp/issues/1584
+    async Task<Mat> GetImageAsMat(string url, string? crossOrigin = "anonymous")
+    {
+        using var image = await HTMLImageElement.CreateFromImageAsync(url, crossOrigin);
+        using var canvas = new HTMLCanvasElement();
+        using var context = canvas.Get2DContext();
+        canvas.Width = image.Width;
+        canvas.Height = image.Height;
+        context.DrawImage(image, 0, 0);
+        using var imageData = context.GetImageData(0, 0, image.Width, image.Height);
+        using var uint8ClampedArray = imageData.Data;
+        var rgbaBytes = uint8ClampedArray.ReadBytes();
+        var mat = new Mat(new Size(image.Width, image.Height), MatType.CV_8UC4);
+        Marshal.Copy(rgbaBytes, 0, mat.DataStart, rgbaBytes.Length);
+        return mat;
+    }
+}

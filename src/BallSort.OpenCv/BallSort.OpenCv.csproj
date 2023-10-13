@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenCvSharp4.Windows" Version="4.8.0.20230708" />
+      <PackageReference Include="OpenCvSharp4" Version="4.8.0.20230708" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,7 +11,12 @@ public static class PuzzleRecognizer
 {
     public static Puzzle RecognizePuzzle(string fileName)
     {
-        using var src = new Mat(fileName);
+         using var mat = new Mat(fileName);
+         return RecognizePuzzle(mat);
+    }
+    
+    public static Puzzle RecognizePuzzle(Mat src)
+    {
         var topPortion = src.Height / 4;
         //crop off top and bottom 1/4 of image. This removes the top and bottom bars leaving only the vials.
         using var cropped = src[new Rect(0, topPortion, src.Width, src.Height - topPortion * 2)];

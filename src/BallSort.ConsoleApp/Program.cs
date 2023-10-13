@@ -2,16 +2,27 @@
 using System.Text.Json;
 using BallSort.Core;
 using BallSort.OpenCv;
+using OpenCvSharp;
 
 namespace BallSort.ConsoleApp;
 
 public static class Program
 {
     public static void Main(string[] args)
-    {
+    {        
+        var bytes = File.ReadAllBytes("test-data\\a.png");
+             
+        
+        Console.WriteLine($"Read {bytes.Length} bytes");
+        
+        var mat = Mat.FromImageData(bytes);
+        var mat2 = Mat.FromArray(bytes);
+        var mat3 = Mat.ImDecode(bytes);
         TestOpenCv();
         // TestSolve();
         // TestLimits();
+
+
     }
 
     private static void TestLimits()
